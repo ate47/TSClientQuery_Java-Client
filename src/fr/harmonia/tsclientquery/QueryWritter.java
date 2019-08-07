@@ -9,11 +9,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import fr.harmonia.tsclientquery.query.Query;
 
 public class QueryWritter extends Thread {
-	private AtomicReference<Query> currentQuery = new AtomicReference<>();
-	private BlockingQueue<Query> queue = new LinkedBlockingQueue<Query>();
+	private AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
+	private BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
 	private OutputStream stream;
 
-	public QueryWritter(AtomicReference<Query> currentQuery, BlockingQueue<Query> queue, OutputStream stream) {
+	public QueryWritter(AtomicReference<Query<?>> currentQuery, BlockingQueue<Query<?>> queue, OutputStream stream) {
 		this.currentQuery = currentQuery;
 		this.queue = queue;
 		this.stream = stream;
@@ -24,7 +24,7 @@ public class QueryWritter extends Thread {
 		PrintStream writter = new PrintStream(stream);
 		while (!this.isInterrupted()) {
 			try {
-				Query q = queue.take();
+				Query<?> q = queue.take();
 
 				synchronized (currentQuery) {
 					currentQuery.set(q);

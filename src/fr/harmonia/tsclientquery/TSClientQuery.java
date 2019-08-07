@@ -9,19 +9,21 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import fr.harmonia.tsclientquery.answer.Answer;
+import fr.harmonia.tsclientquery.answer.ErrorAnswer;
+import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
-import fr.harmonia.tsclientquery.query.Answer;
 import fr.harmonia.tsclientquery.query.AuthQuery;
 import fr.harmonia.tsclientquery.query.Query;
 import fr.harmonia.tsclientquery.query.QueryClientNotifyRegister;
 
 public class TSClientQuery {
-	private AtomicReference<Query> currentQuery = new AtomicReference<>();
-	private BlockingQueue<Query> queue = new LinkedBlockingQueue<Query>();
+	private AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
+	private BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
+	private AtomicInteger selectedSchandlerid = new AtomicInteger();
 	private QueryReader reader;
 	private QueryWritter writter;
 	private Socket socket;
-	private AtomicInteger selectedSchandlerid = new AtomicInteger();
 
 	private String apikey;
 	private InetAddress address;
@@ -37,7 +39,7 @@ public class TSClientQuery {
 		this(apikey, InetAddress.getLocalHost(), 25639);
 	}
 
-	public Answer sendQuery(Query query) {
+	public <T extends Answer> T sendQuery(Query<T> query) {
 		synchronized (query) {
 			queue.add(query);
 			try {
@@ -46,6 +48,10 @@ public class TSClientQuery {
 				e.printStackTrace();
 			}
 		}
+		ErrorAnswer err = query.getError();
+		if (err instanceof RequireRegisterAnswer)
+			throw new UnRegisterQueryException();
+
 		return query.getAnswer();
 	}
 
@@ -56,7 +62,7 @@ public class TSClientQuery {
 	public void start() throws IOException {
 		socket = new Socket(address, port);
 
-		reader = new QueryReader(currentQuery, selectedSchandlerid, queue, socket.getInputStream());
+		reader = new QueryReader(currentQuery, selectedSchandlerid, socket.getInputStream());
 		writter = new QueryWritter(currentQuery, queue, socket.getOutputStream());
 
 		reader.start();

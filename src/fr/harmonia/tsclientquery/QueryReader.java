@@ -4,23 +4,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import fr.harmonia.tsclientquery.answer.ErrorAnswer;
+import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.query.Query;
 
 public class QueryReader extends Thread {
-	private AtomicReference<Query> currentQuery = new AtomicReference<>();
+	private AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
 	private AtomicInteger selectedSchandlerid;
-	private BlockingQueue<Query> queue = new LinkedBlockingQueue<Query>();
 	private InputStream stream;
 
-	public QueryReader(AtomicReference<Query> currentQuery, AtomicInteger selectedSchandlerid,
-			BlockingQueue<Query> queue, InputStream stream) {
+	public QueryReader(AtomicReference<Query<?>> currentQuery, AtomicInteger selectedSchandlerid, InputStream stream) {
 		this.currentQuery = currentQuery;
-		this.queue = queue;
+		this.selectedSchandlerid = selectedSchandlerid;
 		this.stream = stream;
 	}
 
@@ -45,11 +43,9 @@ public class QueryReader extends Thread {
 				reader.read(); // read '\r'
 				if (line.startsWith("The command") || line.startsWith("For example")) {
 					synchronized (currentQuery) {
-						Query q = currentQuery.get();
+						Query<?> q = currentQuery.get();
 						if (q != null) {
-
-							// TODO: UNREGISTERED COMMAND
-
+							q.addError(new RequireRegisterAnswer());
 							currentQuery.notify();
 						}
 					}
@@ -59,12 +55,13 @@ public class QueryReader extends Thread {
 					selectedSchandlerid.set(Integer.parseInt(line.substring("selected schandlerid=".length())));
 				} else
 					synchronized (currentQuery) {
-						Query q = currentQuery.get();
+						Query<?> q = currentQuery.get();
 						if (q != null) {
-							// TODO: ANSWER
-
-							if (line.startsWith("error"))
+							if (line.startsWith("error")) {
+								q.addError(new ErrorAnswer(line));
 								currentQuery.notify();
+							} else
+								q.addAnswer(line);
 						}
 					}
 			}

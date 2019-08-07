@@ -6,7 +6,12 @@ public class Start {
 
 	public static void main(String[] args) {
 		try {
-			new TSClientQuery("T3GE-KK3G-LU5U-MXQS-OUCM-32FW").start();
+			TSClientQuery client = new TSClientQuery(args[0]);
+			
+			client.start();
+			
+			client.registerAllEvents();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
