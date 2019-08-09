@@ -66,7 +66,7 @@ class QueryReader extends Thread {
 						int schandlerid = asw.getInteger("schandlerid");
 						try {
 							switch (EnumEvent.valueOf(rows[0])) {
-							case notifytextmessage:
+							case notifytextmessage: {
 								int targetmode = asw.getInteger("targetmode");
 								String msg = asw.get("msg");
 								int invokerid = asw.getInteger("invokerid");
@@ -84,6 +84,15 @@ class QueryReader extends Thread {
 											invokername, invokeruid));
 									break;
 								}
+							}
+								break;
+							case notifyclientpoke: {
+								String msg = asw.get("msg");
+								int invokerid = asw.getInteger("invokerid");
+								String invokername = asw.get("invokername");
+								String invokeruid = asw.get("invokeruid");
+								HANDLERS.forEach(h -> h.onPoke(schandlerid, invokerid, msg, invokername, invokeruid));
+							}
 								break;
 							case channellist:
 
@@ -131,9 +140,6 @@ class QueryReader extends Thread {
 
 								break;
 							case notifyclientnamefromuid:
-
-								break;
-							case notifyclientpoke:
 
 								break;
 							case notifyclientuidfromclid:

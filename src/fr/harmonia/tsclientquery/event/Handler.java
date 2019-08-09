@@ -5,6 +5,8 @@ public interface Handler {
 	public static final int MESSAGE_TARGET_MODE_CLIENT = 1;
 	public static final int MESSAGE_TARGET_MODE_SERVER = 3;
 
+	void onPoke(int schandlerid, int invokerid, String msg, String invokername, String invokeruid);
+	
 	/**
 	 * call when the client receive a message, require
 	 * {@link EnumEvent#notifytextmessage}

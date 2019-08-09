@@ -15,7 +15,13 @@ public enum EnumEvent {
 
 	notifychanneledited("notifychanneledited"),
 
+	notifychannelgrouplist("notifychannelgrouplist"),
+
+	notifychannelgrouppermlist("notifychannelgrouppermlist"),
+
 	notifychannelmoved("notifychannelmoved"),
+
+	notifychannelpermlist("notifychannelpermlist"),
 
 	notifyclientchatclosed("notifyclientchatclosed"),
 
@@ -30,17 +36,17 @@ public enum EnumEvent {
 	notifyclientleftview("notifyclientleftview"),
 
 	notifyclientmoved("notifyclientmoved"),
-
+	
 	notifyclientnamefromdbid("notifyclientnamefromdbid"),
-
+	
 	notifyclientnamefromuid("notifyclientnamefromuid"),
-
+	
 	notifyclientpoke("notifyclientpoke"),
-
+	
 	notifyclientuidfromclid("notifyclientuidfromclid"),
-
+	
 	notifyclientupdated("notifyclientupdated"),
-
+	
 	notifycomplainlist("notifycomplainlist"),
 
 	notifyconnectioninfo("notifyconnectioninfo"),
@@ -54,6 +60,12 @@ public enum EnumEvent {
 	notifymessagelist("notifymessagelist"),
 
 	notifyserveredited("notifyserveredited"),
+
+	notifyservergroupclientlist("notifyservergroupclientlist"),
+
+	notifyservergrouplist("notifyservergrouplist"),
+
+	notifyservergrouppermlist("notifyservergrouppermlist"),
 
 	notifyserverupdated("notifyserverupdated"),
 

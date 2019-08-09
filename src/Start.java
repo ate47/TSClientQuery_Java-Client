@@ -21,6 +21,7 @@ public class Start {
 
 	public static void testMsg(TSClientQuery client) {
 		client.clientNotifyRegister(EnumEvent.notifytextmessage);
+		client.clientNotifyRegister(EnumEvent.notifyclientpoke);
 		client.registerHandler(new Handler() {
 
 			@Override
@@ -32,8 +33,13 @@ public class Start {
 			@Override
 			public void onMessage(int schandlerid, int targetmode, String msg, int invokerid, String invokername,
 					String invokeruid) {
-				System.out.println((Handler.MESSAGE_TARGET_MODE_CHANNEL == targetmode ? "Channel" : "Server") + "> "
+				System.out.println((MESSAGE_TARGET_MODE_CHANNEL == targetmode ? "Channel" : "Server") + "> "
 						+ invokername + ": " + msg);
+			}
+
+			@Override
+			public void onPoke(int schandlerid, int invokerid, String msg, String invokername, String invokeruid) {
+				System.out.println("Poke> "+invokername + ": " + msg);
 			}
 		});
 	}
