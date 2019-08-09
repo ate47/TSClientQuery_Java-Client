@@ -10,6 +10,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -25,6 +26,7 @@ import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
+import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
 import fr.harmonia.tsclientquery.exception.CommandNotFoundException;
 import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
@@ -122,13 +124,14 @@ public class TSClientQuery {
 		}
 	}
 
-	private InetAddress address;
-	private String apikey;
+	private final InetAddress address;
+	private final String apikey;
 
-	private AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
+	private final AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
 	private long floodRate = 250L;
-	private int port;
-	private BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
+	private final List<Handler> HANDLERS = new ArrayList<>();
+	private final int port;
+	private final BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
 
 	private QueryReader reader;
 
@@ -491,6 +494,15 @@ public class TSClientQuery {
 	}
 
 	/**
+	 * register an handler
+	 * 
+	 * @param handler the handler
+	 */
+	public void registerHandler(Handler handler) {
+		HANDLERS.add(handler);
+	}
+
+	/**
 	 * send a query
 	 * 
 	 * @param <T>   query answer type
@@ -612,7 +624,7 @@ public class TSClientQuery {
 		currentQuery.set(null);
 		queue.clear();
 
-		reader = new QueryReader(currentQuery, selectedSchandlerid, socket.getInputStream());
+		reader = new QueryReader(currentQuery, HANDLERS, selectedSchandlerid, socket.getInputStream());
 		writter = new QueryWritter(currentQuery, queue, socket.getOutputStream());
 
 		writter.setFloodRate(floodRate);
@@ -655,6 +667,22 @@ public class TSClientQuery {
 			;
 			queue.clear();
 		}
+	}
+
+	/**
+	 * unregister all registered handlers
+	 */
+	public void unregisterAllHandlers() {
+		HANDLERS.clear();
+	}
+
+	/**
+	 * unregister an handler
+	 * 
+	 * @param handler the handler
+	 */
+	public void unregisterHandler(Handler handler) {
+		HANDLERS.remove(handler);
 	}
 
 	/**
