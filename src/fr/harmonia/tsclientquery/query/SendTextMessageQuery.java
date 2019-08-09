@@ -23,15 +23,15 @@ public class SendTextMessageQuery extends NoAnswerQuery {
 
 	public SendTextMessageQuery(int clientID, String msg) {
 		super("sendtextmessage");
-		withArgument("targetmode", 1);
-		withArgument("target", clientID);
-		withArgument("msg", msg);
+		addArgument("targetmode", 1);
+		addArgument("target", clientID);
+		addArgument("msg", msg);
 	}
 
 	public SendTextMessageQuery(TargetMode target, String msg) {
 		super("sendtextmessage");
-		withArgument("targetmode", target.id);
-		withArgument("msg", msg);
+		addArgument("targetmode", target.id);
+		addArgument("msg", msg);
 	}
 
 	public enum TargetMode {

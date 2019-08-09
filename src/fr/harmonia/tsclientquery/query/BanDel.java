@@ -17,7 +17,7 @@ public class BanDel extends NoAnswerQuery {
 
 	public BanDel(int banid) {
 		super("bandel");
-		withArgument("banid", banid);
+		addArgument("banid", banid);
 	}
 
 }

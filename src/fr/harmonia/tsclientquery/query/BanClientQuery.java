@@ -73,16 +73,16 @@ public class BanClientQuery extends Query<MultipleBanAnswer> {
 	private BanClientQuery(int clid, int cldbid, String uid, long timeInSeconds, String banreason) {
 		super("banclient");
 		if (clid >= 0)
-			withArgument("clid", clid);
+			addArgument("clid", clid);
 		if (cldbid >= 0)
-			withArgument("cldbid", cldbid);
+			addArgument("cldbid", cldbid);
 		if (timeInSeconds >= 0)
-			withArgument("time", timeInSeconds);
+			addArgument("time", timeInSeconds);
 
 		if (uid != null)
-			withArgument("uid", uid);
+			addArgument("uid", uid);
 		if (banreason != null)
-			withArgument("banreason", banreason);
+			addArgument("banreason", banreason);
 	}
 
 	@Override

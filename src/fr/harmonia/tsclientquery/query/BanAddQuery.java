@@ -67,17 +67,17 @@ public class BanAddQuery extends Query<BanAnswer> {
 	private BanAddQuery(String ip, String regex, String uid, long timeInSeconds, String banreason) {
 		super("banadd");
 		if (ip != null)
-			withArgument("ip", ip);
+			addArgument("ip", ip);
 		if (regex != null)
-			withArgument("name", regex);
+			addArgument("name", regex);
 		if (uid != null)
-			withArgument("uid", uid);
+			addArgument("uid", uid);
 
 		if (timeInSeconds >= 0)
-			withArgument("time", timeInSeconds);
+			addArgument("time", timeInSeconds);
 
 		if (banreason != null)
-			withArgument("banreason", banreason);
+			addArgument("banreason", banreason);
 	}
 
 	@Override

@@ -1,9 +1,5 @@
 package fr.harmonia.tsclientquery.query;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /*
 help channeladdperm
 Usage: channeladdperm cid={channelID} ( permid={permID}|permsid={permName}
@@ -20,35 +16,16 @@ Example:
 
 error id=0 msg=ok
  */
-public class ChannelAddPermQuery extends NoAnswerQuery {
-	private class Perm {
-		String permsid;
-		int permvalue;
+public class ChannelAddPermQuery extends AddPermQuery<ChannelAddPermQuery> {
 
-		public Perm(String permsid, int permvalue) {
-			this.permsid = permsid;
-			this.permvalue = permvalue;
-		}
+	public ChannelAddPermQuery(int channelId, int permid, int permvalue) {
+		super("channeladdperm", permid, permvalue);
+		addArgument("cid", channelId);
 	}
-
-	private List<Perm> perms = new ArrayList<>();
 
 	public ChannelAddPermQuery(int channelId, String permsid, int permvalue) {
-		super("channeladdperm");
-		withArgument("cid", channelId);
-		addPerm(permsid, permvalue);
-	}
-
-	public ChannelAddPermQuery addPerm(String permsid, int permvalue) {
-		perms.add(new Perm(permsid, permvalue));
-		return this;
-	}
-
-	@Override
-	public String createCommand() {
-		return super.createCommand() + ' '
-				+ perms.stream().map(k -> "permsid=" + formatQuery(k.permsid) + " permvalue=" + k.permvalue)
-						.collect(Collectors.joining("|"));
+		super("channeladdperm", permsid, permvalue);
+		addArgument("cid", channelId);
 	}
 
 }

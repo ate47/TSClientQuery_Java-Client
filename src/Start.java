@@ -10,7 +10,7 @@ public class Start {
 			
 			client.start();
 			
-			client.registerAllEvents();
+			client.use(1);
 			
 		} catch (IOException e) {
 			e.printStackTrace();

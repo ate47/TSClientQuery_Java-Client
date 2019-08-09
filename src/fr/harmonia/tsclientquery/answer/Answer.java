@@ -3,23 +3,24 @@ package fr.harmonia.tsclientquery.answer;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.harmonia.tsclientquery.query.Query;
+import fr.harmonia.tsclientquery.TSClientQuery;
 
-public class Answer {
-
+public abstract class Answer {
+	private boolean empty;
 	@SuppressWarnings("unchecked")
-	private static Map<String, String>[] parseLines(String line) {
+	private Map<String, String>[] parseLines() {
 		String[] raw = ((line.startsWith("error") ? line.substring("error ".length()) : line).split("\\|"));
 		Map<String, String>[] data;
 
-		if (raw.length == 0) {
+		if (raw.length == 0 || raw[0].isEmpty()) {
 			data = new Map[] { new HashMap<>() };
+			empty = true;
+		} else {
+			data = new Map[raw.length];
 
 			for (int i = 0; i < data.length; i++)
 				data[i] = parseMap(raw[i]);
-
-		} else {
-			data = new Map[raw.length];
+			empty = false;
 		}
 
 		return data;
@@ -33,9 +34,9 @@ public class Answer {
 		for (String arg : arguments) {
 			String[] a = arg.split("[=]", 2);
 			if (a.length == 2) {
-				data.put(Query.unformatQuery(a[0]), Query.unformatQuery(a[1]));
+				data.put(TSClientQuery.decodeQueryStringParameter(a[0]), TSClientQuery.decodeQueryStringParameter(a[1]));
 			} else {
-				data.put(Query.unformatQuery(a[0]), "");
+				data.put(TSClientQuery.decodeQueryStringParameter(a[0]), "");
 			}
 		}
 
@@ -43,33 +44,122 @@ public class Answer {
 	}
 
 	private Map<String, String>[] data;
+	private int index = 0;
 	private final String line;
 
 	public Answer(String line) {
 		this.line = line;
 	}
 
-	protected String get(int index, String key) {
-		return getData()[0].get(key);
+	/**
+	 * get a key value
+	 * 
+	 * @param index the row index
+	 * @param key   the key
+	 * @return the value, or null if inexistent
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
+	public String get(int index, String key) {
+		return getData()[index].get(key);
 	}
 
-	protected String get(String key) {
-		return getData()[0].get(key);
+	/**
+	 * get a key value for the pointed row
+	 * 
+	 * @param key the key
+	 * @return the value, or null if inexistent
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
+	public String get(String key) {
+		return get(index, key);
 	}
 
+	/**
+	 * get a key value as a boolean
+	 * 
+	 * @param index the row index
+	 * @param key   the key
+	 * @return the value, or false if inexistent
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
+	public boolean getBoolean(int index, String key) {
+		return getInteger(index, key) != 0;
+	}
+
+	/**
+	 * get a key value as a boolean for the pointed row
+	 * 
+	 * @param key the key
+	 * @return the value, or false if inexistent
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
+	public boolean getBoolean(String key) {
+		return getBoolean(index, key);
+	}
+
+	/**
+	 * parse the line if not already done (by asking a value) and return the data
+	 * map
+	 * 
+	 * @return the argument map
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
 	private Map<String, String>[] getData() {
 		if (data == null)
-			return this.data = parseLines(line);
+			return this.data = parseLines();
 		else
 			return data;
 	}
 
-	protected int getInteger(int index, String key) {
-		return Integer.parseInt(getData()[index].get(key));
+	/**
+	 * get a key value as a integer
+	 * 
+	 * @param index the row index
+	 * @param key   the key
+	 * @return the value, or 0 if inexistent
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
+	public int getInteger(int index, String key) {
+		String value = getData()[index].get(key);
+		return value == null ? 0 : Integer.parseInt(value);
 	}
 
-	protected int getInteger(String key) {
-		return getInteger(0, key);
+	/**
+	 * get a key value as a integer for pointed row
+	 * 
+	 * @param key the key
+	 * @return the value, or 0 if inexistent
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
+	public int getInteger(String key) {
+		return getInteger(index, key);
+	}
+
+	/**
+	 * go to the next row
+	 */
+	public void next() {
+		if (!hasNext())
+			new IllegalArgumentException("No next row");
+		++index;
+	}
+
+	public boolean hasNext() {
+		return !empty && index + 1 < getData().length;
+	}
+
+	/**
+	 * get the number of rows returned
+	 */
+	public int rowsCount() {
+		return getData().length;
 	}
 
 }

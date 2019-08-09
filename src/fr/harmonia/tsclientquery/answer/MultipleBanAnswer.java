@@ -21,5 +21,9 @@ public class MultipleBanAnswer extends Answer implements Iterable<BanAnswer> {
 	public Iterator<BanAnswer> iterator() {
 		return list.iterator();
 	}
+	
+	public List<BanAnswer> getBanList() {
+		return list;
+	}
 
 }

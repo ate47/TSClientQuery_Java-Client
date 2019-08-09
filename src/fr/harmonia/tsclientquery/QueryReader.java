@@ -11,7 +11,7 @@ import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.query.Query;
 
-public class QueryReader extends Thread {
+class QueryReader extends Thread {
 	private AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
 	private AtomicInteger selectedSchandlerid;
 	private InputStream stream;
