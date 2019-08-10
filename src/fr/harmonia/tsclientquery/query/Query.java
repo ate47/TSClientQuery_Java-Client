@@ -21,7 +21,7 @@ public abstract class Query<T extends Answer> {
 		this.name = name;
 	}
 
-	public abstract void addAnswer(String line);
+	public abstract void buildAnswer(String line);
 
 	protected void addArgument(String key, Object value) {
 		data.put(TSClientQuery.encodeQueryStringParameter(key), TSClientQuery.encodeQueryStringParameter(String.valueOf(value)));

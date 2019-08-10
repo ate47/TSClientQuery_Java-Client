@@ -86,7 +86,7 @@ public class BanClientQuery extends Query<MultipleBanAnswer> {
 	}
 
 	@Override
-	public void addAnswer(String line) {
+	public void buildAnswer(String line) {
 		if (answer != null)
 			answer.addBan(line);
 		else

@@ -76,7 +76,7 @@ public class ChannelClientListQuery extends Query<ChannelClientListAnswer> {
 	}
 
 	@Override
-	public void addAnswer(String line) {
+	public void buildAnswer(String line) {
 		answer = new ChannelClientListAnswer(line);
 	}
 

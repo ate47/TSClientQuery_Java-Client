@@ -1,6 +1,7 @@
 import java.io.IOException;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
+import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 
@@ -14,6 +15,7 @@ public class Start {
 
 			testMsg(client);
 
+			client.stop();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -42,5 +44,14 @@ public class Start {
 				System.out.println("Poke> "+invokername + ": " + msg);
 			}
 		});
+		
+		WhoAmIAnswer whoAmI = client.whoAmI();
+		int clid = whoAmI.getClientID();
+		
+		client.sendTextMessageToChannel("Hello channel");
+		client.sendTextMessageToServer("Hello server");
+		client.sendTextMessageToClient(clid, "Hello me");
+		client.sendPoke(clid, "HELLO ME!");
+		
 	}
 }

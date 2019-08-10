@@ -1,5 +1,6 @@
 package fr.harmonia.tsclientquery;
 
+import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_NOT_CONNECTED;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_COMMAND_NOT_FOUND;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_INSUFFICIENT_CLIENT_PERMISSIONS;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_INVALID_PARAMETER;
@@ -25,6 +26,7 @@ import fr.harmonia.tsclientquery.answer.ChannelConnectInfoAnswer;
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
+import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
@@ -32,6 +34,7 @@ import fr.harmonia.tsclientquery.exception.CommandNotFoundException;
 import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
 import fr.harmonia.tsclientquery.exception.InvalidParameterQueryException;
 import fr.harmonia.tsclientquery.exception.MessageTooLongException;
+import fr.harmonia.tsclientquery.exception.NotConnectedQueryException;
 import fr.harmonia.tsclientquery.exception.QueryException;
 import fr.harmonia.tsclientquery.exception.UnRegisterQueryException;
 import fr.harmonia.tsclientquery.exception.UnStartedClientException;
@@ -49,18 +52,24 @@ import fr.harmonia.tsclientquery.query.ChannelClientListQuery;
 import fr.harmonia.tsclientquery.query.ChannelConnectInfoQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery.ChannelProperty;
+import fr.harmonia.tsclientquery.query.ClientPokeQuery;
 import fr.harmonia.tsclientquery.query.HelpQuery;
 import fr.harmonia.tsclientquery.query.Query;
 import fr.harmonia.tsclientquery.query.QueryClientNotifyRegister;
 import fr.harmonia.tsclientquery.query.QueryClientNotifyUnregister;
 import fr.harmonia.tsclientquery.query.SendTextMessageQuery;
 import fr.harmonia.tsclientquery.query.UseQuery;
+import fr.harmonia.tsclientquery.query.WhoAmIQuery;
 
 public class TSClientQuery {
 	/**
 	 * the max length of a message
 	 */
 	public static final int MAX_MESSAGE_LENGTH = 8192;
+	/**
+	 * the max length of a message
+	 */
+	public static final int MAX_POKE_LENGTH = 100;
 
 	/**
 	 * decode with base64
@@ -494,6 +503,25 @@ public class TSClientQuery {
 	}
 
 	/**
+	 * 
+	 * send a poke to another client
+	 * 
+	 * @param clientid the client id to sent the poke
+	 * @param message  the poke text message
+	 * @throws MessageTooLongException                     if the size of the
+	 *                                                     message is too long
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
+	 * @see TSClientQuery#MAX_POKE_LENGTH
+	 */
+	public void sendPoke(int clientid, String message)
+			throws InsufficientClientPermissionsQueryException, MessageTooLongException {
+		if (message.length() > MAX_POKE_LENGTH)
+			throw new MessageTooLongException();
+		sendQuery(new ClientPokeQuery(message, clientid));
+	}
+
+	/**
 	 * register an handler
 	 * 
 	 * @param handler the handler
@@ -510,6 +538,8 @@ public class TSClientQuery {
 	 * @return the answer to this query
 	 * @throws CommandNotFoundException                    if the query command
 	 *                                                     isn't a valid one
+	 * @throws NotConnectedQueryException                  if not connected to a
+	 *                                                     server connection
 	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
 	 *                                                     permission to do this
 	 *                                                     command
@@ -518,8 +548,9 @@ public class TSClientQuery {
 	 * @throws InvalidParameterQueryException              if the parameter aren't
 	 *                                                     valid
 	 */
-	public <T extends Answer> T sendQuery(Query<T> query) throws CommandNotFoundException,
-			InsufficientClientPermissionsQueryException, UnRegisterQueryException, InvalidParameterQueryException {
+	public <T extends Answer> T sendQuery(Query<T> query)
+			throws CommandNotFoundException, InsufficientClientPermissionsQueryException, UnRegisterQueryException,
+			InvalidParameterQueryException, NotConnectedQueryException {
 		checkStartedClient();
 		synchronized (query) {
 			queue.add(query);
@@ -537,14 +568,25 @@ public class TSClientQuery {
 		switch (err.getId()) {
 		case ERROR_ID_COMMAND_NOT_FOUND:
 			throw new CommandNotFoundException(err);
-		case ERROR_ID_INSUFFICIENT_CLIENT_PERMISSIONS:
-			throw new InsufficientClientPermissionsQueryException(err);
+		case ERROR_ID_NOT_CONNECTED:
+			throw new NotConnectedQueryException(err);
 		case ERROR_ID_INVALID_PARAMETER:
 			throw new InvalidParameterQueryException(err);
-		default:
+		case ERROR_ID_INSUFFICIENT_CLIENT_PERMISSIONS:
+			throw new InsufficientClientPermissionsQueryException(err);
 		case ERROR_ID_OK:
+		default:
 			return query.getAnswer();
 		}
+	}
+
+	/**
+	 * request our ChannelID and our ClientID on this server connection
+	 * 
+	 * @return a {@link WhoAmIAnswer} with those information
+	 */
+	public WhoAmIAnswer whoAmI() {
+		return sendQuery(new WhoAmIQuery());
 	}
 
 	/**

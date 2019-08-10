@@ -40,6 +40,10 @@ public class QueryException extends RuntimeException {
 	 */
 	public static final int ERROR_ID_MISSING_REQUIRED_PARAMETER = 1542;
 	/**
+	 * error id=1794 msg=not\sconnected
+	 */
+	public static final int ERROR_ID_NOT_CONNECTED = 1794;
+	/**
 	 * error id=1796 msg=currently\snot\spossible
 	 */
 	public static final int ERROR_ID_CURRENTLY_NOT_POSSIBLE = 1796;

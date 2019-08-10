@@ -30,7 +30,7 @@ public class ChannelConnectInfoQuery extends Query<ChannelConnectInfoAnswer> {
 	}
 
 	@Override
-	public void addAnswer(String line) {
+	public void buildAnswer(String line) {
 		answer = new ChannelConnectInfoAnswer(line);
 	}
 

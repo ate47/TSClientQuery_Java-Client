@@ -81,7 +81,7 @@ public class BanAddQuery extends Query<BanAnswer> {
 	}
 
 	@Override
-	public void addAnswer(String line) {
+	public void buildAnswer(String line) {
 		answer = new BanAnswer(line);
 	}
 

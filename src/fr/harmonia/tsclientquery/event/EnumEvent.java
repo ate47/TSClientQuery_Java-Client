@@ -1,6 +1,9 @@
 package fr.harmonia.tsclientquery.event;
 
 public enum EnumEvent {
+	/**
+	 * use to register all events to a server connection
+	 */
 	any("any"),
 
 	channellist("channellist"),
@@ -36,17 +39,20 @@ public enum EnumEvent {
 	notifyclientleftview("notifyclientleftview"),
 
 	notifyclientmoved("notifyclientmoved"),
-	
+
 	notifyclientnamefromdbid("notifyclientnamefromdbid"),
-	
+
 	notifyclientnamefromuid("notifyclientnamefromuid"),
-	
+
+	/**
+	 * @see Handler#onPoke(int, int, String, String, String)
+	 */
 	notifyclientpoke("notifyclientpoke"),
-	
+
 	notifyclientuidfromclid("notifyclientuidfromclid"),
-	
+
 	notifyclientupdated("notifyclientupdated"),
-	
+
 	notifycomplainlist("notifycomplainlist"),
 
 	notifyconnectioninfo("notifyconnectioninfo"),
@@ -71,6 +77,10 @@ public enum EnumEvent {
 
 	notifytalkstatuschange("notifytalkstatuschange"),
 
+	/**
+	 * @see Handler#onMessage(int, int, String, int, String, String)
+	 * @see Handler#onPrivateMessage(int, String, int, int, String, String)
+	 */
 	notifytextmessage("notifytextmessage");
 
 	private String name;

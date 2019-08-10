@@ -2,11 +2,11 @@ package fr.harmonia.tsclientquery.event;
 
 public interface Handler {
 	public static final int MESSAGE_TARGET_MODE_CHANNEL = 2;
-	public static final int MESSAGE_TARGET_MODE_CLIENT = 1;
 	public static final int MESSAGE_TARGET_MODE_SERVER = 3;
 
-	void onPoke(int schandlerid, int invokerid, String msg, String invokername, String invokeruid);
-	
+	default void onPoke(int schandlerid, int invokerid, String msg, String invokername, String invokeruid) {
+	}
+
 	/**
 	 * call when the client receive a message, require
 	 * {@link EnumEvent#notifytextmessage}
@@ -20,7 +20,9 @@ public interface Handler {
 	 * @param invokeruid  UID of who sent the message
 	 * @see Handler#onPrivateMessage(int, String, int, int, String, String)
 	 */
-	void onMessage(int schandlerid, int targetmode, String msg, int invokerid, String invokername, String invokeruid);
+	default void onMessage(int schandlerid, int targetmode, String msg, int invokerid, String invokername,
+			String invokeruid) {
+	}
 
 	/**
 	 * call when the client receive a private message, require
@@ -34,7 +36,8 @@ public interface Handler {
 	 * @param invokeruid  UID of who sent the message
 	 * @see Handler#onPrivateMessage(int, String, int, int, String, String)
 	 */
-	void onPrivateMessage(int schandlerid, String msg, int target, int invokerid, String invokername,
-			String invokeruid);
+	default void onPrivateMessage(int schandlerid, String msg, int target, int invokerid, String invokername,
+			String invokeruid) {
+	}
 
 }

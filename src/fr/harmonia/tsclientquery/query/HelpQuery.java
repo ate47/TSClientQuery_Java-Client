@@ -21,7 +21,7 @@ public class HelpQuery extends Query<HelpAnswer> {
 	}
 
 	@Override
-	public void addAnswer(String line) {
+	public void buildAnswer(String line) {
 		if (answer == null)
 			answer = new HelpAnswer(line);
 		else

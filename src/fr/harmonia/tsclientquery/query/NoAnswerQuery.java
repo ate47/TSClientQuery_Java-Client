@@ -13,7 +13,7 @@ public class NoAnswerQuery extends Query<ErrorAnswer> {
 	}
 
 	@Override
-	public void addAnswer(String line) {
+	public void buildAnswer(String line) {
 		throw new NoAnswerQueryAnswerException();
 	}
 

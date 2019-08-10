@@ -73,12 +73,12 @@ class QueryReader extends Thread {
 								String invokername = asw.get("invokername");
 								String invokeruid = asw.get("invokeruid");
 								switch (targetmode) {
-								case 2:
-								case 3:
+								case 2: // Channel
+								case 3: // Server
 									HANDLERS.forEach(h -> h.onMessage(schandlerid, targetmode, msg, invokerid,
 											invokername, invokeruid));
 									break;
-								case 1:
+								case 1: // Client
 									int target = asw.getInteger("target");
 									HANDLERS.forEach(h -> h.onPrivateMessage(schandlerid, msg, target, invokerid,
 											invokername, invokeruid));
@@ -196,14 +196,13 @@ class QueryReader extends Thread {
 								q.addError(new ErrorAnswer(line));
 								currentQuery.notify();
 							} else
-								q.addAnswer(line);
+								q.buildAnswer(line);
 						}
 					}
 			}
 
 			reader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
