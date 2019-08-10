@@ -1,10 +1,12 @@
 package fr.harmonia.example;
+
 import java.io.IOException;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
+import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
 
 public class ClientQueryDemo {
 
@@ -14,15 +16,18 @@ public class ClientQueryDemo {
 
 			client.start();
 
-			testMsg(client);
+//			testReceiveMsg(client);
+//			testSendMsg(client);
 
-			client.stop();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void testMsg(TSClientQuery client) {
+	/**
+	 * demo to receive message from the client
+	 */
+	public static void testReceiveMsg(TSClientQuery client) {
 		client.clientNotifyRegister(EnumEvent.notifytextmessage);
 		client.clientNotifyRegister(EnumEvent.notifyclientpoke);
 		client.registerHandler(new Handler() {
@@ -42,17 +47,29 @@ public class ClientQueryDemo {
 
 			@Override
 			public void onPoke(int schandlerid, int invokerid, String msg, String invokername, String invokeruid) {
-				System.out.println("Poke> "+invokername + ": " + msg);
+				System.out.println("Poke> " + invokername + ": " + msg);
 			}
 		});
-		
+	}
+
+	/**
+	 * demo to send message with the client
+	 */
+	public static void testSendMsg(TSClientQuery client) {
+
 		WhoAmIAnswer whoAmI = client.whoAmI();
 		int clid = whoAmI.getClientID();
-		
-		client.sendTextMessageToChannel("Hello channel");
-		client.sendTextMessageToServer("Hello server");
-		client.sendTextMessageToClient(clid, "Hello me");
-		client.sendPoke(clid, "HELLO ME!");
-		
+
+		try {
+			
+			client.sendPoke(clid, "HELLO ME!");
+			client.sendTextMessageToChannel("Hello channel");
+			client.sendTextMessageToServer("Hello server");
+			client.sendTextMessageToClient(clid, "Hello me");
+			
+		} catch (InsufficientClientPermissionsQueryException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

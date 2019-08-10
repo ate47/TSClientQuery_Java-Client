@@ -20,6 +20,10 @@ public class QueryException extends RuntimeException {
 	 */
 	public static final int ERROR_IDINVALID_CHANNEL_ID = 768;
 	/**
+	 * error id=781 msg=invalid\schannel\spassword
+	 */
+	public static final int ERROR_ID_INVALID_CHANNEL_PASSWORD = 781;
+	/**
 	 * error id=1028 msg=invalid\sserver\spassword
 	 */
 	public static final int ERROR_ID_INVALID_SERVER_PASSWORD = 1028;
@@ -63,6 +67,7 @@ public class QueryException extends RuntimeException {
 	 * error id=3328 msg=invalid\sban\sid
 	 */
 	public static final int ERROR_ID_INVALID_BAN_ID = 3328;
+	
 
 	private static final long serialVersionUID = 1L;
 

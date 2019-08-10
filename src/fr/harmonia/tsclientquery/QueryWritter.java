@@ -22,14 +22,14 @@ class QueryWritter extends Thread {
 			try {
 				Query<?> q = client.queue.take();
 
-				synchronized (client) {
-					client.currentQuery = q;
+				synchronized (client.currentQuery) {
+					client.currentQuery.set(q);
 
 					writter.print(q.createCommand() + "\n\r");
 
-					client.wait();
+					client.currentQuery.wait();
 
-					client.currentQuery = null;
+					client.currentQuery.set(null);
 				}
 
 				synchronized (q) {

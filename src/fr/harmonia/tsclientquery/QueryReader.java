@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
+import fr.harmonia.tsclientquery.answer.OpenAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.query.Query;
@@ -20,7 +20,6 @@ class QueryReader extends Thread {
 		this.stream = stream;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void run() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -33,7 +32,7 @@ class QueryReader extends Thread {
 
 			while (!this.isInterrupted()) {
 				line = reader.readLine();
-				System.out.println("line: '" + line + "'");
+				System.err.println("line: '" + line + "'");
 				if (line == null)
 					break;
 
@@ -41,19 +40,18 @@ class QueryReader extends Thread {
 					continue;
 				reader.read(); // read '\r'
 				if (line.startsWith("The command") || line.startsWith("For example")) {
-					synchronized (client) {
-						Query<?> q = client.currentQuery;
+					synchronized (client.currentQuery) {
+						Query<?> q = client.currentQuery.get();
 						if (q != null) {
 							q.addError(new RequireRegisterAnswer());
-							client.notify();
+							client.currentQuery.notify();
 						}
 					}
 				} else if (line.startsWith("notify")) {
 
 					String[] rows = line.split(" ", 2);
 					if (rows.length == 2) {
-						Answer asw = new Answer(rows[1]) {
-						};
+						OpenAnswer asw = new OpenAnswer(rows[1]);
 						int schandlerid = asw.getInteger("schandlerid");
 						try {
 							switch (EnumEvent.valueOf(rows[0])) {
@@ -181,12 +179,12 @@ class QueryReader extends Thread {
 				} else if (line.startsWith("selected schandlerid=")) {
 					client.selectedSchandlerid.set(Integer.parseInt(line.substring("selected schandlerid=".length())));
 				} else
-					synchronized (client) {
-						Query<?> q = client.currentQuery;
+					synchronized (client.currentQuery) {
+						Query<?> q = client.currentQuery.get();
 						if (q != null) {
 							if (line.startsWith("error")) {
 								q.addError(new ErrorAnswer(line));
-								client.notify();
+								client.currentQuery.notify();
 							} else
 								q.buildAnswer(line);
 						}

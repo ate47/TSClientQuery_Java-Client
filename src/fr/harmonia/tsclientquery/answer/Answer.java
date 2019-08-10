@@ -4,9 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
+import fr.harmonia.tsclientquery.query.Query;
 
-public abstract class Answer {
+/**
+ * a {@link Query} answer, parse returned line into array of maps, to get access
+ * by key / index, use an {@link OpenAnswer}
+ * 
+ * @author ATE47
+ *
+ */
+public class Answer {
 	private boolean empty;
+
 	@SuppressWarnings("unchecked")
 	private Map<String, String>[] parseLines() {
 		String[] raw = ((line.startsWith("error") ? line.substring("error ".length()) : line).split("\\|"));
@@ -34,7 +43,8 @@ public abstract class Answer {
 		for (String arg : arguments) {
 			String[] a = arg.split("[=]", 2);
 			if (a.length == 2) {
-				data.put(TSClientQuery.decodeQueryStringParameter(a[0]), TSClientQuery.decodeQueryStringParameter(a[1]));
+				data.put(TSClientQuery.decodeQueryStringParameter(a[0]),
+						TSClientQuery.decodeQueryStringParameter(a[1]));
 			} else {
 				data.put(TSClientQuery.decodeQueryStringParameter(a[0]), "");
 			}
@@ -47,7 +57,7 @@ public abstract class Answer {
 	private int index = 0;
 	private final String line;
 
-	public Answer(String line) {
+	protected Answer(String line) {
 		this.line = line;
 	}
 
@@ -57,10 +67,8 @@ public abstract class Answer {
 	 * @param index the row index
 	 * @param key   the key
 	 * @return the value, or null if inexistent
-	 * @deprecated only for internal use
 	 */
-	@Deprecated
-	public String get(int index, String key) {
+	protected String get(int index, String key) {
 		return getData()[index].get(key);
 	}
 
@@ -69,10 +77,8 @@ public abstract class Answer {
 	 * 
 	 * @param key the key
 	 * @return the value, or null if inexistent
-	 * @deprecated only for internal use
 	 */
-	@Deprecated
-	public String get(String key) {
+	protected String get(String key) {
 		return get(index, key);
 	}
 
@@ -82,10 +88,8 @@ public abstract class Answer {
 	 * @param index the row index
 	 * @param key   the key
 	 * @return the value, or false if inexistent
-	 * @deprecated only for internal use
 	 */
-	@Deprecated
-	public boolean getBoolean(int index, String key) {
+	protected boolean getBoolean(int index, String key) {
 		return getInteger(index, key) != 0;
 	}
 
@@ -94,10 +98,8 @@ public abstract class Answer {
 	 * 
 	 * @param key the key
 	 * @return the value, or false if inexistent
-	 * @deprecated only for internal use
 	 */
-	@Deprecated
-	public boolean getBoolean(String key) {
+	protected boolean getBoolean(String key) {
 		return getBoolean(index, key);
 	}
 
@@ -106,9 +108,7 @@ public abstract class Answer {
 	 * map
 	 * 
 	 * @return the argument map
-	 * @deprecated only for internal use
 	 */
-	@Deprecated
 	private Map<String, String>[] getData() {
 		if (data == null)
 			return this.data = parseLines();
@@ -122,10 +122,8 @@ public abstract class Answer {
 	 * @param index the row index
 	 * @param key   the key
 	 * @return the value, or 0 if inexistent
-	 * @deprecated only for internal use
 	 */
-	@Deprecated
-	public int getInteger(int index, String key) {
+	protected int getInteger(int index, String key) {
 		String value = getData()[index].get(key);
 		return value == null ? 0 : Integer.parseInt(value);
 	}
@@ -135,10 +133,8 @@ public abstract class Answer {
 	 * 
 	 * @param key the key
 	 * @return the value, or 0 if inexistent
-	 * @deprecated only for internal use
 	 */
-	@Deprecated
-	public int getInteger(String key) {
+	protected int getInteger(String key) {
 		return getInteger(index, key);
 	}
 

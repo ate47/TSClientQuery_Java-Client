@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
+import fr.harmonia.tsclientquery.ban.ClientBan;
 
 /*
 Usage: banclient clid={clientID}|cldbid={clientDatabaseID}|uid={clientUID} \
@@ -25,53 +26,14 @@ error id=0 msg=ok
  */
 
 public class BanClientQuery extends Query<MultipleBanAnswer> {
-	public static class BanClientQueryBuilder {
-		private int clid;
-		private int cldbid;
-		private String uid;
-		private long timeInSeconds = -1;
-		private String banreason;
 
-		public BanClientQuery build() {
-			if (clid < 0 && cldbid < 0 && uid == null)
-				throw new BanClientQueryNoTargetException();
-
-			return new BanClientQuery(clid, cldbid, uid, timeInSeconds, banreason);
-		}
-
-		public BanClientQueryBuilder withCldbid(int cldbid) {
-			this.cldbid = cldbid;
-			return this;
-		}
-
-		public BanClientQueryBuilder withClid(int clid) {
-			this.clid = clid;
-			return this;
-		}
-
-		public BanClientQueryBuilder withReason(String banreason) {
-			this.banreason = banreason;
-			return this;
-		}
-
-		public BanClientQueryBuilder withTime(long timeInSeconds) {
-			this.timeInSeconds = timeInSeconds;
-			return this;
-		}
-
-		public BanClientQueryBuilder withUID(String uid) {
-			this.uid = uid;
-			return this;
-		}
-	}
-
-	public static class BanClientQueryNoTargetException extends IllegalArgumentException {
-		private static final long serialVersionUID = -420909279135279327L;
-
-	}
-
-	private BanClientQuery(int clid, int cldbid, String uid, long timeInSeconds, String banreason) {
+	public BanClientQuery(ClientBan ban) {
 		super("banclient");
+		int clid = ban.getClientID();
+		int cldbid = ban.getClientDatabaseID();
+		String uid = ban.getUid();
+		long timeInSeconds = ban.getTimeInSeconds();
+		String banreason = ban.getBanReason();
 		if (clid >= 0)
 			addArgument("clid", clid);
 		if (cldbid >= 0)

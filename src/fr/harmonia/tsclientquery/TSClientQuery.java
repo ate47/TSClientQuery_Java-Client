@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.BanAnswer;
@@ -26,6 +27,8 @@ import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
+import fr.harmonia.tsclientquery.ban.Ban;
+import fr.harmonia.tsclientquery.ban.ClientBan;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
@@ -40,9 +43,7 @@ import fr.harmonia.tsclientquery.exception.UnStartedClientException;
 import fr.harmonia.tsclientquery.exception.WrongAuthKeyException;
 import fr.harmonia.tsclientquery.query.AuthQuery;
 import fr.harmonia.tsclientquery.query.BanAddQuery;
-import fr.harmonia.tsclientquery.query.BanAddQuery.BanAddQueryBuilder;
 import fr.harmonia.tsclientquery.query.BanClientQuery;
-import fr.harmonia.tsclientquery.query.BanClientQuery.BanClientQueryBuilder;
 import fr.harmonia.tsclientquery.query.BanDel;
 import fr.harmonia.tsclientquery.query.BanDelAllQuery;
 import fr.harmonia.tsclientquery.query.ChannelAddPermQuery;
@@ -58,6 +59,8 @@ import fr.harmonia.tsclientquery.query.QueryClientNotifyRegister;
 import fr.harmonia.tsclientquery.query.QueryClientNotifyUnregister;
 import fr.harmonia.tsclientquery.query.SendTextMessageQuery;
 import fr.harmonia.tsclientquery.query.UseQuery;
+import fr.harmonia.tsclientquery.query.VerifyChannelPasswordQuery;
+import fr.harmonia.tsclientquery.query.VerifyServerPasswordQuery;
 import fr.harmonia.tsclientquery.query.WhoAmIQuery;
 
 public class TSClientQuery {
@@ -133,20 +136,20 @@ public class TSClientQuery {
 	}
 
 	private final InetAddress address;
-	private final int port;
 	private final String apikey;
+	AtomicReference<Query<?>> currentQuery = new AtomicReference<Query<?>>();
 
-	Query<?> currentQuery;
 	long floodRate = 250L;
 	final List<Handler> HANDLERS = new ArrayList<>();
+	private final int port;
 	final BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
-	AtomicInteger selectedSchandlerid = new AtomicInteger();
-
-	private Socket socket;
-	private boolean started = false;
-
-	private QueryWritter writter;
 	private QueryReader reader;
+
+	AtomicInteger selectedSchandlerid = new AtomicInteger();
+	private Socket socket;
+
+	private boolean started = false;
+	private QueryWritter writter;
 
 	/**
 	 * create a clientquery to default localhost:25639
@@ -186,14 +189,16 @@ public class TSClientQuery {
 	 * send a {@link BanAddQuery} and get the ban ID
 	 * 
 	 * @param query the query to send
-	 * @return the ban ID of the new ban
+	 * @return the new ban
 	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
 	 *                                                     permission to do this
 	 *                                                     command
 	 * @see BanAddQueryBuilder
 	 */
-	public int banAdd(BanAddQuery query) throws InsufficientClientPermissionsQueryException {
-		return sendQuery(query).getBanId();
+	public Ban banAdd(Ban ban) throws InsufficientClientPermissionsQueryException {
+		int banId = sendQuery(new BanAddQuery(ban)).getBanId();
+		return new Ban(ban.getBanReason(), banId, ban.getIp(), ban.getNameRegex(), ban.getTimeInSeconds(),
+				ban.getUid());
 	}
 
 	/**
@@ -204,8 +209,8 @@ public class TSClientQuery {
 	 * @throws QueryException if an error occur
 	 * @see BanClientQueryBuilder
 	 */
-	public int[] banClient(BanClientQuery query) throws InsufficientClientPermissionsQueryException {
-		MultipleBanAnswer asw = sendQuery(query);
+	public int[] banClient(ClientBan ban) throws InsufficientClientPermissionsQueryException {
+		MultipleBanAnswer asw = sendQuery(new BanClientQuery(ban));
 		return asw.getBanList().stream().mapToInt(BanAnswer::getBanId).toArray();
 	}
 
@@ -651,7 +656,7 @@ public class TSClientQuery {
 			throw new AlreadyStartedException();
 		socket = new Socket(address, port);
 
-		currentQuery = null;
+		currentQuery.set(null);
 		queue.clear();
 
 		reader = new QueryReader(this, socket.getInputStream());
@@ -691,7 +696,7 @@ public class TSClientQuery {
 			writter = null;
 			socket = null;
 
-			currentQuery = null;
+			currentQuery.set(null);
 			queue.clear();
 		}
 	}
@@ -726,6 +731,26 @@ public class TSClientQuery {
 	 */
 	public void use(int scHandlerID) {
 		sendQuery(new UseQuery(scHandlerID));
+	}
+
+	/**
+	 * check if we know a channel password
+	 * 
+	 * @param password the password to try
+	 * @return true if the password is correct, false otherwise
+	 */
+	public boolean verifyChannelPassword(int channelID, String password) {
+		return sendQuery(new VerifyChannelPasswordQuery(channelID, password)).getId() == QueryException.ERROR_ID_OK;
+	}
+
+	/**
+	 * check if we know the server password
+	 * 
+	 * @param password the password to try
+	 * @return true if the password is correct, false otherwise
+	 */
+	public boolean verifyServerPassword(String password) {
+		return sendQuery(new VerifyServerPasswordQuery(password)).getId() == QueryException.ERROR_ID_OK;
 	}
 
 	/**

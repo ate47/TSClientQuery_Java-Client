@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.BanAnswer;
+import fr.harmonia.tsclientquery.ban.Ban;
 
 /*
 
@@ -21,51 +22,13 @@ error id=0 msg=ok
  */
 public class BanAddQuery extends Query<BanAnswer> {
 
-	public static class BanAddQueryBuilder {
-		private String ip;
-		private String regex;
-		private String uid;
-		private long timeInSeconds = -1L;
-		private String banreason;
-
-		public BanAddQuery build() {
-			if (ip == null && regex == null && uid == null)
-				throw new BanAddQueryNoTargetException();
-			return new BanAddQuery(ip, regex, uid, timeInSeconds, banreason);
-		}
-
-		public BanAddQueryBuilder withIp(String ip) {
-			this.ip = ip;
-			return this;
-		}
-
-		public BanAddQueryBuilder withName(String regex) {
-			this.regex = regex;
-			return this;
-		}
-
-		public BanAddQueryBuilder withReason(String banreason) {
-			this.banreason = banreason;
-			return this;
-		}
-
-		public BanAddQueryBuilder withTime(long timeInSeconds) {
-			this.timeInSeconds = timeInSeconds;
-			return this;
-		}
-
-		public BanAddQueryBuilder withUID(String uid) {
-			this.uid = uid;
-			return this;
-		}
-	}
-
-	public static class BanAddQueryNoTargetException extends IllegalArgumentException {
-		private static final long serialVersionUID = 5425099683145168929L;
-	}
-
-	private BanAddQuery(String ip, String regex, String uid, long timeInSeconds, String banreason) {
+	public BanAddQuery(Ban ban) {
 		super("banadd");
+		String ip = ban.getIp();
+		String regex = ban.getNameRegex();
+		String uid = ban.getUid();
+		long timeInSeconds = ban.getTimeInSeconds();
+		String banreason = ban.getBanReason();
 		if (ip != null)
 			addArgument("ip", ip);
 		if (regex != null)
