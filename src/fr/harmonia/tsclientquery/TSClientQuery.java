@@ -1,9 +1,9 @@
 package fr.harmonia.tsclientquery;
 
-import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_NOT_CONNECTED;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_COMMAND_NOT_FOUND;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_INSUFFICIENT_CLIENT_PERMISSIONS;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_INVALID_PARAMETER;
+import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_NOT_CONNECTED;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_OK;
 
 import java.io.IOException;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.BanAnswer;
@@ -134,22 +133,20 @@ public class TSClientQuery {
 	}
 
 	private final InetAddress address;
+	private final int port;
 	private final String apikey;
 
-	private final AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
-	private long floodRate = 250L;
-	private final List<Handler> HANDLERS = new ArrayList<>();
-	private final int port;
-	private final BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
-
-	private QueryReader reader;
-
-	private AtomicInteger selectedSchandlerid = new AtomicInteger();
+	Query<?> currentQuery;
+	long floodRate = 250L;
+	final List<Handler> HANDLERS = new ArrayList<>();
+	final BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
+	AtomicInteger selectedSchandlerid = new AtomicInteger();
 
 	private Socket socket;
 	private boolean started = false;
 
 	private QueryWritter writter;
+	private QueryReader reader;
 
 	/**
 	 * create a clientquery to default localhost:25639
@@ -503,6 +500,15 @@ public class TSClientQuery {
 	}
 
 	/**
+	 * register an handler
+	 * 
+	 * @param handler the handler
+	 */
+	public synchronized void registerHandler(Handler handler) {
+		HANDLERS.add(handler);
+	}
+
+	/**
 	 * 
 	 * send a poke to another client
 	 * 
@@ -519,15 +525,6 @@ public class TSClientQuery {
 		if (message.length() > MAX_POKE_LENGTH)
 			throw new MessageTooLongException();
 		sendQuery(new ClientPokeQuery(message, clientid));
-	}
-
-	/**
-	 * register an handler
-	 * 
-	 * @param handler the handler
-	 */
-	public void registerHandler(Handler handler) {
-		HANDLERS.add(handler);
 	}
 
 	/**
@@ -578,15 +575,6 @@ public class TSClientQuery {
 		default:
 			return query.getAnswer();
 		}
-	}
-
-	/**
-	 * request our ChannelID and our ClientID on this server connection
-	 * 
-	 * @return a {@link WhoAmIAnswer} with those information
-	 */
-	public WhoAmIAnswer whoAmI() {
-		return sendQuery(new WhoAmIQuery());
 	}
 
 	/**
@@ -646,10 +634,10 @@ public class TSClientQuery {
 	 * 
 	 * @param floodRate the flood rate in millis
 	 */
-	public void setFloodRate(long floodRate) {
+	public synchronized void setFloodRate(long floodRate) {
+		if (floodRate < 0)
+			throw new IllegalArgumentException("Negative flood rate!");
 		this.floodRate = floodRate;
-		if (started)
-			writter.setFloodRate(floodRate);
 	}
 
 	/**
@@ -663,13 +651,11 @@ public class TSClientQuery {
 			throw new AlreadyStartedException();
 		socket = new Socket(address, port);
 
-		currentQuery.set(null);
+		currentQuery = null;
 		queue.clear();
 
-		reader = new QueryReader(currentQuery, HANDLERS, selectedSchandlerid, socket.getInputStream());
-		writter = new QueryWritter(currentQuery, queue, socket.getOutputStream());
-
-		writter.setFloodRate(floodRate);
+		reader = new QueryReader(this, socket.getInputStream());
+		writter = new QueryWritter(this, socket.getOutputStream());
 
 		reader.start();
 		writter.start();
@@ -705,8 +691,7 @@ public class TSClientQuery {
 			writter = null;
 			socket = null;
 
-			currentQuery.set(null);
-			;
+			currentQuery = null;
 			queue.clear();
 		}
 	}
@@ -714,7 +699,7 @@ public class TSClientQuery {
 	/**
 	 * unregister all registered handlers
 	 */
-	public void unregisterAllHandlers() {
+	public synchronized void unregisterAllHandlers() {
 		HANDLERS.clear();
 	}
 
@@ -723,7 +708,7 @@ public class TSClientQuery {
 	 * 
 	 * @param handler the handler
 	 */
-	public void unregisterHandler(Handler handler) {
+	public synchronized void unregisterHandler(Handler handler) {
 		HANDLERS.remove(handler);
 	}
 
@@ -741,5 +726,14 @@ public class TSClientQuery {
 	 */
 	public void use(int scHandlerID) {
 		sendQuery(new UseQuery(scHandlerID));
+	}
+
+	/**
+	 * request our ChannelID and our ClientID on this server connection
+	 * 
+	 * @return a {@link WhoAmIAnswer} with those information
+	 */
+	public WhoAmIAnswer whoAmI() {
+		return sendQuery(new WhoAmIQuery());
 	}
 }

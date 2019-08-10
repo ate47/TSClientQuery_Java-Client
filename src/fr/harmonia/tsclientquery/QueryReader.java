@@ -4,28 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
-import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.query.Query;
 
 class QueryReader extends Thread {
-	private AtomicReference<Query<?>> currentQuery;
-	private List<Handler> HANDLERS;
-	private AtomicInteger selectedSchandlerid;
+	private TSClientQuery client;
 	private InputStream stream;
 
-	public QueryReader(AtomicReference<Query<?>> currentQuery, List<Handler> handlers,
-			AtomicInteger selectedSchandlerid, InputStream stream) {
-		this.currentQuery = currentQuery;
-		this.selectedSchandlerid = selectedSchandlerid;
-		this.HANDLERS = handlers;
+	public QueryReader(TSClientQuery client, InputStream stream) {
+		this.client = client;
 		this.stream = stream;
 	}
 
@@ -50,11 +41,11 @@ class QueryReader extends Thread {
 					continue;
 				reader.read(); // read '\r'
 				if (line.startsWith("The command") || line.startsWith("For example")) {
-					synchronized (currentQuery) {
-						Query<?> q = currentQuery.get();
+					synchronized (client) {
+						Query<?> q = client.currentQuery;
 						if (q != null) {
 							q.addError(new RequireRegisterAnswer());
-							currentQuery.notify();
+							client.notify();
 						}
 					}
 				} else if (line.startsWith("notify")) {
@@ -75,12 +66,12 @@ class QueryReader extends Thread {
 								switch (targetmode) {
 								case 2: // Channel
 								case 3: // Server
-									HANDLERS.forEach(h -> h.onMessage(schandlerid, targetmode, msg, invokerid,
+									client.HANDLERS.forEach(h -> h.onMessage(schandlerid, targetmode, msg, invokerid,
 											invokername, invokeruid));
 									break;
 								case 1: // Client
 									int target = asw.getInteger("target");
-									HANDLERS.forEach(h -> h.onPrivateMessage(schandlerid, msg, target, invokerid,
+									client.HANDLERS.forEach(h -> h.onPrivateMessage(schandlerid, msg, target, invokerid,
 											invokername, invokeruid));
 									break;
 								}
@@ -91,7 +82,8 @@ class QueryReader extends Thread {
 								int invokerid = asw.getInteger("invokerid");
 								String invokername = asw.get("invokername");
 								String invokeruid = asw.get("invokeruid");
-								HANDLERS.forEach(h -> h.onPoke(schandlerid, invokerid, msg, invokername, invokeruid));
+								client.HANDLERS
+										.forEach(h -> h.onPoke(schandlerid, invokerid, msg, invokername, invokeruid));
 							}
 								break;
 							case channellist:
@@ -187,14 +179,14 @@ class QueryReader extends Thread {
 					}
 					// EVENT
 				} else if (line.startsWith("selected schandlerid=")) {
-					selectedSchandlerid.set(Integer.parseInt(line.substring("selected schandlerid=".length())));
+					client.selectedSchandlerid.set(Integer.parseInt(line.substring("selected schandlerid=".length())));
 				} else
-					synchronized (currentQuery) {
-						Query<?> q = currentQuery.get();
+					synchronized (client) {
+						Query<?> q = client.currentQuery;
 						if (q != null) {
 							if (line.startsWith("error")) {
 								q.addError(new ErrorAnswer(line));
-								currentQuery.notify();
+								client.notify();
 							} else
 								q.buildAnswer(line);
 						}

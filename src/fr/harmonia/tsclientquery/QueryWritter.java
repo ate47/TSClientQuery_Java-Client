@@ -2,22 +2,16 @@ package fr.harmonia.tsclientquery;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 import fr.harmonia.tsclientquery.query.Query;
 
 class QueryWritter extends Thread {
-	private AtomicReference<Query<?>> currentQuery = new AtomicReference<>();
-	private long floodRate = 0;
-	private BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
+	private TSClientQuery client;
 
 	private OutputStream stream;
 
-	public QueryWritter(AtomicReference<Query<?>> currentQuery, BlockingQueue<Query<?>> queue, OutputStream stream) {
-		this.currentQuery = currentQuery;
-		this.queue = queue;
+	public QueryWritter(TSClientQuery client, OutputStream stream) {
+		this.client = client;
 		this.stream = stream;
 	}
 
@@ -26,30 +20,27 @@ class QueryWritter extends Thread {
 		PrintStream writter = new PrintStream(stream);
 		while (!this.isInterrupted()) {
 			try {
-				Query<?> q = queue.take();
+				Query<?> q = client.queue.take();
 
-				synchronized (currentQuery) {
-					currentQuery.set(q);
+				synchronized (client) {
+					client.currentQuery = q;
 
 					writter.print(q.createCommand() + "\n\r");
 
-					currentQuery.wait();
+					client.wait();
 
-					currentQuery.set(null);
+					client.currentQuery = null;
 				}
 
 				synchronized (q) {
 					q.notify();
 				}
-				Thread.sleep(floodRate);
+				if (client.floodRate != 0)
+					Thread.sleep(client.floodRate);
 			} catch (InterruptedException e) {
 				break;
 			}
 		}
 		writter.close();
-	}
-
-	public void setFloodRate(long floodRate) {
-		this.floodRate = floodRate;
 	}
 }

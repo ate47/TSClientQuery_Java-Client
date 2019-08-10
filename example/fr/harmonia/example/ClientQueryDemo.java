@@ -1,3 +1,4 @@
+package fr.harmonia.example;
 import java.io.IOException;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
@@ -5,7 +6,7 @@ import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 
-public class Start {
+public class ClientQueryDemo {
 
 	public static void main(String[] args) {
 		try {
