@@ -40,9 +40,6 @@
    complaindelall              | delete all complaints from a clientDBID
    complaindel                 | delete a complaint from the server
    complainlist                | list all complaints from a server or for a clientDBID
-   connect                     | connects to a server in current server tab
-   currentschandlerid          | server connection handler ID of current server tab
-   disconnect                  | disconnects from server in current server tab
    ftcreatedir                 | create a new directory
    ftdeletefile                | delete one or more files
    ftgetfileinfo               | get informations about the specified file

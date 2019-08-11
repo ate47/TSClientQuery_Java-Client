@@ -13,7 +13,6 @@ client_talk_power=0 client_is_talker=0 client_is_priority_speaker=0 client_is_re
 client_is_muted=0 client_unique_identifier=Wk+H5VFRlAfGpj1nFwMjrS+Iv7s= client_servergroups=8 client_channel_group_id=8
 client_icon_id=0 client_country
  */
-@SuppressWarnings("deprecation")
 public class ChannelClientListAnswer extends Answer {
 
 	public ChannelClientListAnswer(String line) {

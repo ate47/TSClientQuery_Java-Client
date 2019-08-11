@@ -1,6 +1,5 @@
 package fr.harmonia.tsclientquery.answer;
 
-@SuppressWarnings("deprecation")
 public class WhoAmIAnswer extends Answer {
 
 	public WhoAmIAnswer(String line) {

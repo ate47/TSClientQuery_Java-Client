@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery;
 
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_COMMAND_NOT_FOUND;
+import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_CURRENTLY_NOT_POSSIBLE;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_INSUFFICIENT_CLIENT_PERMISSIONS;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_INVALID_PARAMETER;
 import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_NOT_CONNECTED;
@@ -33,6 +34,7 @@ import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
 import fr.harmonia.tsclientquery.exception.CommandNotFoundException;
+import fr.harmonia.tsclientquery.exception.CurrentlyNotPossibleQueryException;
 import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
 import fr.harmonia.tsclientquery.exception.InvalidParameterQueryException;
 import fr.harmonia.tsclientquery.exception.MessageTooLongException;
@@ -53,6 +55,9 @@ import fr.harmonia.tsclientquery.query.ChannelConnectInfoQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery.ChannelProperty;
 import fr.harmonia.tsclientquery.query.ClientPokeQuery;
+import fr.harmonia.tsclientquery.query.ConnectQuery;
+import fr.harmonia.tsclientquery.query.CurrentServerConnectionHandlerIdQuery;
+import fr.harmonia.tsclientquery.query.DisconnectQuery;
 import fr.harmonia.tsclientquery.query.HelpQuery;
 import fr.harmonia.tsclientquery.query.Query;
 import fr.harmonia.tsclientquery.query.QueryClientNotifyRegister;
@@ -62,6 +67,8 @@ import fr.harmonia.tsclientquery.query.UseQuery;
 import fr.harmonia.tsclientquery.query.VerifyChannelPasswordQuery;
 import fr.harmonia.tsclientquery.query.VerifyServerPasswordQuery;
 import fr.harmonia.tsclientquery.query.WhoAmIQuery;
+import fr.harmonia.tsclientquery.server.ServerConnection;
+import fr.harmonia.tsclientquery.server.ServerConnectionBuilder;
 
 public class TSClientQuery {
 	/**
@@ -440,6 +447,19 @@ public class TSClientQuery {
 	}
 
 	/**
+	 * try to connect to a server
+	 * 
+	 * @param serverConnection the server to connect, see
+	 *                         {@link ServerConnectionBuilder} to build
+	 * @throws CurrentlyNotPossibleQueryException if the selected server connection
+	 *                                            handler is already use for a
+	 *                                            server
+	 */
+	public void connect(ServerConnection server) throws CurrentlyNotPossibleQueryException {
+		sendQuery(new ConnectQuery(server));
+	}
+
+	/**
 	 * create a channel
 	 * 
 	 * @param name       the channel name
@@ -451,6 +471,14 @@ public class TSClientQuery {
 	public void createChannel(String name, ChannelProperty... properties)
 			throws InsufficientClientPermissionsQueryException {
 		sendQuery(new ChannelCreateQuery(name, properties));
+	}
+
+	/**
+	 * get the current server connection handler id
+	 */
+	public int currentServerConnectionHandlerID() {
+		sendQuery(new CurrentServerConnectionHandlerIdQuery());
+		return selectedSchandlerid.get();
 	}
 
 	/**
@@ -475,6 +503,22 @@ public class TSClientQuery {
 	 */
 	public boolean deleteBan(int banid) throws InsufficientClientPermissionsQueryException {
 		return sendQuery(new BanDel(banid)).getId() == QueryException.ERROR_ID_OK;
+	}
+
+	/**
+	 * disconnect from the current server connection
+	 */
+	public void disconnect() {
+		sendQuery(new DisconnectQuery());
+	}
+
+	/**
+	 * disconnect from the current server connection
+	 * 
+	 * @param message the message to show
+	 */
+	public void disconnect(String message) {
+		sendQuery(new DisconnectQuery(message));
 	}
 
 	/**
@@ -549,10 +593,12 @@ public class TSClientQuery {
 	 *                                                     register a notify event
 	 * @throws InvalidParameterQueryException              if the parameter aren't
 	 *                                                     valid
+	 * @throws CurrentlyNotPossibleQueryException          if the action is not
+	 *                                                     possible at that time
 	 */
 	public <T extends Answer> T sendQuery(Query<T> query)
 			throws CommandNotFoundException, InsufficientClientPermissionsQueryException, UnRegisterQueryException,
-			InvalidParameterQueryException, NotConnectedQueryException {
+			InvalidParameterQueryException, NotConnectedQueryException, CurrentlyNotPossibleQueryException {
 		checkStartedClient();
 		synchronized (query) {
 			queue.add(query);
@@ -570,6 +616,8 @@ public class TSClientQuery {
 		switch (err.getId()) {
 		case ERROR_ID_COMMAND_NOT_FOUND:
 			throw new CommandNotFoundException(err);
+		case ERROR_ID_CURRENTLY_NOT_POSSIBLE:
+			throw new CurrentlyNotPossibleQueryException(err);
 		case ERROR_ID_NOT_CONNECTED:
 			throw new NotConnectedQueryException(err);
 		case ERROR_ID_INVALID_PARAMETER:

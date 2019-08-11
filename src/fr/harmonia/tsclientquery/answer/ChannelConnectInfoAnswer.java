@@ -1,6 +1,5 @@
 package fr.harmonia.tsclientquery.answer;
 
-@SuppressWarnings("deprecation")
 public class ChannelConnectInfoAnswer extends Answer {
 
 	public ChannelConnectInfoAnswer(String line) {
