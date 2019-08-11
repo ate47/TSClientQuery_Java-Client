@@ -10,7 +10,6 @@ import static fr.harmonia.tsclientquery.exception.QueryException.ERROR_ID_OK;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -30,6 +29,7 @@ import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.ban.Ban;
 import fr.harmonia.tsclientquery.ban.ClientBan;
+import fr.harmonia.tsclientquery.ban.DataBaseBan;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
@@ -48,6 +48,7 @@ import fr.harmonia.tsclientquery.query.BanAddQuery;
 import fr.harmonia.tsclientquery.query.BanClientQuery;
 import fr.harmonia.tsclientquery.query.BanDel;
 import fr.harmonia.tsclientquery.query.BanDelAllQuery;
+import fr.harmonia.tsclientquery.query.BanListQuery;
 import fr.harmonia.tsclientquery.query.ChannelAddPermQuery;
 import fr.harmonia.tsclientquery.query.ChannelClientAddPermQuery;
 import fr.harmonia.tsclientquery.query.ChannelClientListQuery;
@@ -162,11 +163,10 @@ public class TSClientQuery {
 	 * create a clientquery to default localhost:25639
 	 * 
 	 * @param apikey client APIKEY
-	 * @throws UnknownHostException if localhost can't be resolved
 	 * @see TSClientQuery#TSClientQuery(String, InetAddress, int)
 	 */
-	public TSClientQuery(String apikey) throws UnknownHostException {
-		this(apikey, InetAddress.getLocalHost(), 25639);
+	public TSClientQuery(String apikey) {
+		this(apikey, InetAddress.getLoopbackAddress(), 25639);
 	}
 
 	/**
@@ -196,16 +196,14 @@ public class TSClientQuery {
 	 * send a {@link BanAddQuery} and get the ban ID
 	 * 
 	 * @param query the query to send
-	 * @return the new ban
+	 * @return the new ban id
 	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
 	 *                                                     permission to do this
 	 *                                                     command
 	 * @see BanAddQueryBuilder
 	 */
-	public Ban banAdd(Ban ban) throws InsufficientClientPermissionsQueryException {
-		int banId = sendQuery(new BanAddQuery(ban)).getBanId();
-		return new Ban(ban.getBanReason(), banId, ban.getIp(), ban.getNameRegex(), ban.getTimeInSeconds(),
-				ban.getUid());
+	public int banAdd(Ban ban) throws InsufficientClientPermissionsQueryException {
+		return sendQuery(new BanAddQuery(ban)).getBanId();
 	}
 
 	/**
@@ -219,6 +217,18 @@ public class TSClientQuery {
 	public int[] banClient(ClientBan ban) throws InsufficientClientPermissionsQueryException {
 		MultipleBanAnswer asw = sendQuery(new BanClientQuery(ban));
 		return asw.getBanList().stream().mapToInt(BanAnswer::getBanId).toArray();
+	}
+
+	/**
+	 * get the list of ban in the database
+	 * 
+	 * @return the list of ban
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 */
+	public List<DataBaseBan> banList() throws InsufficientClientPermissionsQueryException {
+		return sendQuery(new BanListQuery()).getBanList();
 	}
 
 	/**
@@ -702,6 +712,7 @@ public class TSClientQuery {
 	public synchronized void start() throws IOException, WrongAuthKeyException {
 		if (started)
 			throw new AlreadyStartedException();
+		
 		socket = new Socket(address, port);
 
 		currentQuery.set(null);

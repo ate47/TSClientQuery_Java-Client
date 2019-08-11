@@ -45,13 +45,11 @@ public class BanClientQuery extends Query<MultipleBanAnswer> {
 			addArgument("uid", uid);
 		if (banreason != null)
 			addArgument("banreason", banreason);
+		answer = new MultipleBanAnswer();
 	}
 
 	@Override
 	public void buildAnswer(String line) {
-		if (answer != null)
-			answer.addBan(line);
-		else
-			answer = new MultipleBanAnswer(line);
+		answer.addBan(line);
 	}
 }

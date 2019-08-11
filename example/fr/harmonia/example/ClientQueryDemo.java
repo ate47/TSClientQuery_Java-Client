@@ -1,9 +1,12 @@
 package fr.harmonia.example;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
+import fr.harmonia.tsclientquery.ban.DataBaseBan;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
@@ -18,10 +21,26 @@ public class ClientQueryDemo {
 
 //			testReceiveMsg(client);
 //			testSendMsg(client);
+			testGetBanList(client);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * demo to get the ban list
+	 */
+	public static void testGetBanList(TSClientQuery client) {
+		// this command require event registry
+		client.clientNotifyRegister(EnumEvent.notifybanlist);
+
+		// get the ban list
+		List<DataBaseBan> banList = client.banList();
+
+		// display
+		System.out.println(banList.stream().map(b -> "Ban #" + b.getBanId() + " by " + b.getInvokerNickname())
+				.collect(Collectors.joining("\n")));
 	}
 
 	/**
@@ -61,12 +80,12 @@ public class ClientQueryDemo {
 		int clid = whoAmI.getClientID();
 
 		try {
-			
+
 			client.sendPoke(clid, "HELLO ME!");
 			client.sendTextMessageToChannel("Hello channel");
 			client.sendTextMessageToServer("Hello server");
 			client.sendTextMessageToClient(clid, "Hello me");
-			
+
 		} catch (InsufficientClientPermissionsQueryException e) {
 			e.printStackTrace();
 		}

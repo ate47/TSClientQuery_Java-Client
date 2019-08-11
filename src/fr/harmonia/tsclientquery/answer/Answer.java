@@ -14,27 +14,6 @@ import fr.harmonia.tsclientquery.query.Query;
  *
  */
 public class Answer {
-	private boolean empty;
-
-	@SuppressWarnings("unchecked")
-	private Map<String, String>[] parseLines() {
-		String[] raw = ((line.startsWith("error") ? line.substring("error ".length()) : line).split("\\|"));
-		Map<String, String>[] data;
-
-		if (raw.length == 0 || raw[0].isEmpty()) {
-			data = new Map[] { new HashMap<>() };
-			empty = true;
-		} else {
-			data = new Map[raw.length];
-
-			for (int i = 0; i < data.length; i++)
-				data[i] = parseMap(raw[i]);
-			empty = false;
-		}
-
-		return data;
-	}
-
 	private static Map<String, String> parseMap(String raw) {
 		String[] arguments = raw.split(" ");
 
@@ -54,6 +33,9 @@ public class Answer {
 	}
 
 	private Map<String, String>[] data;
+
+	private boolean empty;
+
 	private int index = 0;
 	private final String line;
 
@@ -139,16 +121,61 @@ public class Answer {
 	}
 
 	/**
-	 * go to the next row
+	 * get a key value as a long
+	 * 
+	 * @param index the row index
+	 * @param key   the key
+	 * @return the value, or 0 if inexistent
+	 */
+	protected long getLong(int index, String key) {
+		String value = getData()[index].get(key);
+		return value == null ? 0L : Long.parseLong(value);
+	}
+
+	/**
+	 * get a key value as a long for pointed row
+	 * 
+	 * @param key the key
+	 * @return the value, or 0 if inexistent
+	 */
+	protected long getLong(String key) {
+		return getLong(index, key);
+	}
+
+	/**
+	 * true while the row pointed is empty
+	 */
+	public boolean rowNotEmpty() {
+		return !empty && index != getData().length;
+	}
+
+	/**
+	 * go to the next row combine with {@link Answer#rowNotEmpty()} to create an
+	 * iterator
 	 */
 	public void next() {
-		if (!hasNext())
+		if (!rowNotEmpty())
 			new IllegalArgumentException("No next row");
 		++index;
 	}
 
-	public boolean hasNext() {
-		return !empty && index + 1 < getData().length;
+	@SuppressWarnings("unchecked")
+	private Map<String, String>[] parseLines() {
+		String[] raw = ((line.startsWith("error") ? line.substring("error ".length()) : line).split("\\|"));
+		Map<String, String>[] data;
+
+		if (raw.length == 0 || raw[0].isEmpty()) {
+			data = new Map[] { new HashMap<>() };
+			empty = true;
+		} else {
+			data = new Map[raw.length];
+
+			for (int i = 0; i < data.length; i++)
+				data[i] = parseMap(raw[i]);
+			empty = false;
+		}
+
+		return data;
 	}
 
 	/**

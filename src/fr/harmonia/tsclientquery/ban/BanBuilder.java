@@ -15,7 +15,7 @@ public class BanBuilder {
 	public Ban build() {
 		if (ip == null && regex == null && uid == null)
 			throw new BanBuilderNoTargetException();
-		return new Ban(banreason, 0, ip, regex, timeInSeconds, uid);
+		return new Ban(banreason, ip, regex, timeInSeconds, uid);
 	}
 
 	public BanBuilder withIp(String ip) {

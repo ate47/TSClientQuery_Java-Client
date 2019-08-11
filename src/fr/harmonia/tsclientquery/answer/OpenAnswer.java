@@ -21,12 +21,11 @@ public class OpenAnswer extends Answer {
 	public String get(String key) {
 		return super.get(key);
 	}
-
 	@Override
 	public boolean getBoolean(int index, String key) {
 		return super.getBoolean(index, key);
 	}
-
+	
 	@Override
 	public boolean getBoolean(String key) {
 		return super.getBoolean(key);
@@ -40,5 +39,15 @@ public class OpenAnswer extends Answer {
 	@Override
 	public int getInteger(String key) {
 		return super.getInteger(key);
+	}
+
+	@Override
+	protected long getLong(int index, String key) {
+		return super.getLong(index, key);
+	}
+
+	@Override
+	protected long getLong(String key) {
+		return super.getLong(key);
 	}
 }

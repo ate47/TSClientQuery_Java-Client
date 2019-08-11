@@ -1,6 +1,5 @@
    quit                        | close connection
 
-   banlist                     | list all active ban rules
    channelclientpermlist       | list all assigned channel-client permisisons for a client and specified channel id
    channeldelete               | delete a channel
    channeldelperm              | delete a from a channel

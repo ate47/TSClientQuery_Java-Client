@@ -7,10 +7,9 @@ import java.util.List;
 public class MultipleBanAnswer extends Answer implements Iterable<BanAnswer> {
 	private List<BanAnswer> list;
 
-	public MultipleBanAnswer(String line) {
-		super(line);
+	public MultipleBanAnswer() {
+		super("");
 		list = new ArrayList<>();
-		addBan(line);
 	}
 
 	public void addBan(String line) {
