@@ -1,5 +1,8 @@
 package fr.harmonia.tsclientquery.event;
 
+import fr.harmonia.tsclientquery.query.BanListQuery;
+import fr.harmonia.tsclientquery.query.ChannelClientPermListQuery;
+
 public enum EnumEvent {
 	/**
 	 * use to register all events to a server connection
@@ -10,7 +13,15 @@ public enum EnumEvent {
 
 	channellistfinished("channellistfinished"),
 
+	/**
+	 * use for {@link BanListQuery}
+	 */
 	notifybanlist("notifybanlist"),
+
+	/**
+	 * use for {@link ChannelClientPermListQuery}
+	 */
+	notifychannelclientpermlist("notifychannelclientpermlist"),
 
 	notifychannelcreated("notifychannelcreated"),
 

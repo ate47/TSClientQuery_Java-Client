@@ -1,8 +1,5 @@
    quit                        | close connection
 
-   channelclientpermlist       | list all assigned channel-client permisisons for a client and specified channel id
-   channeldelete               | delete a channel
-   channeldelperm              | delete a from a channel
    channeledit                 | edit a channel
    channelgroupadd             | create a channel group
    channelgroupaddperm         | add a permission to a channel group
@@ -25,7 +22,6 @@
    clientgetnamefromdbid       | get the nickname from a client database id
    clientgetnamefromuid        | get the nickname from a client unique id
    clientgetuidfromclid        | get the unique id from a clientID
-   clientkick                  | kick a client
    clientlist                  | list known clients
    clientmove                  | move a client or switch channel ourself
    clientmute                  | mute all voice data from a client

@@ -43,6 +43,7 @@ import fr.harmonia.tsclientquery.exception.QueryException;
 import fr.harmonia.tsclientquery.exception.UnRegisterQueryException;
 import fr.harmonia.tsclientquery.exception.UnStartedClientException;
 import fr.harmonia.tsclientquery.exception.WrongAuthKeyException;
+import fr.harmonia.tsclientquery.perm.Permission;
 import fr.harmonia.tsclientquery.query.AuthQuery;
 import fr.harmonia.tsclientquery.query.BanAddQuery;
 import fr.harmonia.tsclientquery.query.BanClientQuery;
@@ -52,8 +53,12 @@ import fr.harmonia.tsclientquery.query.BanListQuery;
 import fr.harmonia.tsclientquery.query.ChannelAddPermQuery;
 import fr.harmonia.tsclientquery.query.ChannelClientAddPermQuery;
 import fr.harmonia.tsclientquery.query.ChannelClientListQuery;
+import fr.harmonia.tsclientquery.query.ChannelClientPermListQuery;
 import fr.harmonia.tsclientquery.query.ChannelConnectInfoQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery;
+import fr.harmonia.tsclientquery.query.ChannelDeleteQuery;
+import fr.harmonia.tsclientquery.query.ClientKickQuery;
+import fr.harmonia.tsclientquery.query.ClientKickQuery.Reason;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery.ChannelProperty;
 import fr.harmonia.tsclientquery.query.ClientPokeQuery;
 import fr.harmonia.tsclientquery.query.ConnectQuery;
@@ -73,11 +78,15 @@ import fr.harmonia.tsclientquery.server.ServerConnectionBuilder;
 
 public class TSClientQuery {
 	/**
+	 * the max length of a kick message
+	 */
+	public static final int MAX_KICK_MESSAGE_LENGTH = 40;
+	/**
 	 * the max length of a message
 	 */
 	public static final int MAX_MESSAGE_LENGTH = 8192;
 	/**
-	 * the max length of a message
+	 * the max length of a poke
 	 */
 	public static final int MAX_POKE_LENGTH = 100;
 
@@ -220,14 +229,18 @@ public class TSClientQuery {
 	}
 
 	/**
-	 * get the list of ban in the database
+	 * get the list of ban in the database, the {@link EnumEvent#notifybanlist} must
+	 * be register
 	 * 
 	 * @return the list of ban
 	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
 	 *                                                     permission to do this
 	 *                                                     command
+	 * @throws UnRegisterQueryException                    if the
+	 *                                                     {@link EnumEvent#notifybanlist}
+	 *                                                     event isn't register
 	 */
-	public List<DataBaseBan> banList() throws InsufficientClientPermissionsQueryException {
+	public List<DataBaseBan> banList() throws InsufficientClientPermissionsQueryException, UnRegisterQueryException {
 		return sendQuery(new BanListQuery()).getBanList();
 	}
 
@@ -355,6 +368,24 @@ public class TSClientQuery {
 	public ChannelClientListAnswer channelClientList(int cid, boolean uid, boolean away, boolean voice, boolean groups,
 			boolean icon, boolean country) {
 		return sendQuery(new ChannelClientListQuery(cid, uid, away, voice, groups, icon, country));
+	}
+
+	/**
+	 * get the list of permission for a client for a channel in the database, the
+	 * {@link EnumEvent#notifychannelclientpermlist} event must be registered
+	 * 
+	 * @return the list of permission
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws UnRegisterQueryException                    if the
+	 *                                                     {@link EnumEvent#notifychannelclientpermlist}
+	 *                                                     event isn't registered
+	 * 
+	 */
+	public List<Permission> channelClientPermList(int cid, int cldbid)
+			throws InsufficientClientPermissionsQueryException, UnRegisterQueryException {
+		return sendQuery(new ChannelClientPermListQuery(cid, cldbid)).getPermissions();
 	}
 
 	/**
@@ -516,6 +547,19 @@ public class TSClientQuery {
 	}
 
 	/**
+	 * delete a channel from the server
+	 * 
+	 * @param cid   the channel id
+	 * @param force delete even if there are clients within
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 */
+	public void deleteChannel(int cid, boolean force) throws InsufficientClientPermissionsQueryException {
+		sendQuery(new ChannelDeleteQuery(cid, force));
+	}
+
+	/**
 	 * disconnect from the current server connection
 	 */
 	public void disconnect() {
@@ -556,6 +600,68 @@ public class TSClientQuery {
 	 */
 	public boolean isStarted() {
 		return started;
+	}
+
+	/**
+	 * kick clients from the channel
+	 * 
+	 * @param clids cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 */
+	public void kickFromChannel(int... clids) throws InsufficientClientPermissionsQueryException {
+		sendQuery(new ClientKickQuery(Reason.CHANNEL, clids));
+	}
+
+	/**
+	 * kick clients from the channel with a reason
+	 * 
+	 * @param reason the reason of this
+	 * @param clids  cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws MessageTooLongException                     if the size of the reason
+	 *                                                     is too long
+	 * @see TSClientQuery#MAX_KICK_MESSAGE_LENGTH
+	 */
+	public void kickFromChannel(String reason, int... clids)
+			throws InsufficientClientPermissionsQueryException, MessageTooLongException {
+		if (reason.length() > MAX_KICK_MESSAGE_LENGTH)
+			throw new MessageTooLongException();
+		sendQuery(new ClientKickQuery(Reason.CHANNEL, reason, clids));
+	}
+
+	/**
+	 * kick clients from the server
+	 * 
+	 * @param clids cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 */
+	public void kickFromServer(int... clids) throws InsufficientClientPermissionsQueryException {
+		sendQuery(new ClientKickQuery(Reason.SERVER, clids));
+	}
+
+	/**
+	 * kick clients from the server with a reason
+	 * 
+	 * @param reason the reason of this
+	 * @param clids  cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws MessageTooLongException                     if the size of the reason
+	 *                                                     is too long
+	 * @see TSClientQuery#MAX_KICK_MESSAGE_LENGTH
+	 */
+	public void kickFromServer(String reason, int... clids)
+			throws InsufficientClientPermissionsQueryException, MessageTooLongException {
+		if (reason.length() > MAX_KICK_MESSAGE_LENGTH)
+			throw new MessageTooLongException();
+		sendQuery(new ClientKickQuery(Reason.SERVER, reason, clids));
 	}
 
 	/**
@@ -712,7 +818,7 @@ public class TSClientQuery {
 	public synchronized void start() throws IOException, WrongAuthKeyException {
 		if (started)
 			throw new AlreadyStartedException();
-		
+
 		socket = new Socket(address, port);
 
 		currentQuery.set(null);

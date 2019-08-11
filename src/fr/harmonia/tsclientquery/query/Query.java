@@ -24,7 +24,11 @@ public abstract class Query<T extends Answer> {
 	public abstract void buildAnswer(String line);
 
 	protected void addArgument(String key, Object value) {
-		data.put(TSClientQuery.encodeQueryStringParameter(key), TSClientQuery.encodeQueryStringParameter(String.valueOf(value)));
+		String k = TSClientQuery.encodeQueryStringParameter(key);
+		String v = value instanceof Boolean ? (((Boolean) value).booleanValue() ? "1" : "0")
+				: value instanceof Number ? String.valueOf(value)
+						: TSClientQuery.encodeQueryStringParameter(String.valueOf(value));
+		data.put(k, v);
 	}
 
 	public void addError(ErrorAnswer error) {
