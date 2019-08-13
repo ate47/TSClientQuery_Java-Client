@@ -1,6 +1,6 @@
 package fr.harmonia.tsclientquery.query;
 
-import fr.harmonia.tsclientquery.server.ServerConnection;
+import fr.harmonia.tsclientquery.objects.ServerConnection;
 
 /*
 help connect

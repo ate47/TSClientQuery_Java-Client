@@ -44,6 +44,8 @@ import fr.harmonia.tsclientquery.objects.Ban;
 import fr.harmonia.tsclientquery.objects.ChannelProperty;
 import fr.harmonia.tsclientquery.objects.ClientBan;
 import fr.harmonia.tsclientquery.objects.DataBaseBan;
+import fr.harmonia.tsclientquery.objects.ServerConnection;
+import fr.harmonia.tsclientquery.objects.builder.ServerConnectionBuilder;
 import fr.harmonia.tsclientquery.perm.Permission;
 import fr.harmonia.tsclientquery.query.AuthQuery;
 import fr.harmonia.tsclientquery.query.BanAddQuery;
@@ -74,8 +76,6 @@ import fr.harmonia.tsclientquery.query.UseQuery;
 import fr.harmonia.tsclientquery.query.VerifyChannelPasswordQuery;
 import fr.harmonia.tsclientquery.query.VerifyServerPasswordQuery;
 import fr.harmonia.tsclientquery.query.WhoAmIQuery;
-import fr.harmonia.tsclientquery.server.ServerConnection;
-import fr.harmonia.tsclientquery.server.ServerConnectionBuilder;
 
 /**
  * a client to link with a Teamspeak client with <a

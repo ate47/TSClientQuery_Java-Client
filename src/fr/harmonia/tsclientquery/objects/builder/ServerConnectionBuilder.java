@@ -1,6 +1,8 @@
-package fr.harmonia.tsclientquery.server;
+package fr.harmonia.tsclientquery.objects.builder;
 
 import java.util.Objects;
+
+import fr.harmonia.tsclientquery.objects.ServerConnection;
 
 public class ServerConnectionBuilder {
 

@@ -144,7 +144,7 @@ public class ParsedObject {
 	 */
 	protected int getInteger(int index, String key) {
 		String value = getData()[index].get(key);
-		return value == null ? 0 : Integer.parseInt(value);
+		return value == null || value.isEmpty() ? 0 : Integer.parseInt(value);
 	}
 
 	/**

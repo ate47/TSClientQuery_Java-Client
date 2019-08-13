@@ -92,6 +92,19 @@ public class ChannelClient extends ParsedObject {
 		return client_unique_identifier;
 	}
 
+	public SpeakIcon getSpeakIcon() {
+		return isClientOutputHardware()
+				? !isClientOutputMuted()
+						? isClientInputHardware() ? !isClientInputMuted()
+								? isClientTalking()
+										? isClientChannelCommander() ? SpeakIcon.CHANNEL_COMMANDER_SPEAKING
+												: SpeakIcon.SPEAKING
+										: isClientChannelCommander() ? SpeakIcon.CHANNEL_COMMANDER : SpeakIcon.IDLE
+								: SpeakIcon.MICROPHONE_MUTED : SpeakIcon.MICROPHONE_DISABLED
+						: SpeakIcon.SPEAKER_MUTED
+				: SpeakIcon.SPEAKER_DISABLE;
+	}
+
 	public boolean isClientAway() {
 		return client_away;
 	}
@@ -139,5 +152,4 @@ public class ChannelClient extends ParsedObject {
 	public boolean isServerQuery() {
 		return client_type;
 	}
-
 }

@@ -1,4 +1,4 @@
-package fr.harmonia.tsclientquery.server;
+package fr.harmonia.tsclientquery.objects;
 
 import java.util.Objects;
 
