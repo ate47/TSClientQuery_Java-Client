@@ -3,7 +3,7 @@ package fr.harmonia.tsclientquery.answer;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.harmonia.tsclientquery.ban.DataBaseBan;
+import fr.harmonia.tsclientquery.objects.DataBaseBan;
 
 public class BanListAnswer extends Answer {
 	private List<DataBaseBan> bans;

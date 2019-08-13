@@ -1,4 +1,4 @@
-package fr.harmonia.tsclientquery.channel;
+package fr.harmonia.tsclientquery.objects;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
 

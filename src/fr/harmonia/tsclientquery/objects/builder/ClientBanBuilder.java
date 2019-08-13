@@ -1,4 +1,6 @@
-package fr.harmonia.tsclientquery.ban;
+package fr.harmonia.tsclientquery.objects.builder;
+
+import fr.harmonia.tsclientquery.objects.ClientBan;
 
 public class ClientBanBuilder {
 	public static class ClientBanBuilderNoTargetException extends IllegalArgumentException {

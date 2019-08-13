@@ -1,5 +1,9 @@
 package fr.harmonia.tsclientquery.answer;
 
+import java.util.List;
+
+import fr.harmonia.tsclientquery.objects.ChannelClient;
+
 /*
 
 channelclientlist cid=1 -uid -away -voice -groups -icon -country
@@ -14,100 +18,15 @@ client_is_muted=0 client_unique_identifier=Wk+H5VFRlAfGpj1nFwMjrS+Iv7s= client_s
 client_icon_id=0 client_country
  */
 public class ChannelClientListAnswer extends Answer {
+	private List<ChannelClient> list;
 
 	public ChannelClientListAnswer(String line) {
 		super(line);
+		list = convertRowInto(ChannelClient::new);
 	}
 
-	public int getChannelID() {
-		return getInteger("cid");
+	public List<ChannelClient> getChannelClientList() {
+		return list;
 	}
 
-	public String getClientAwayMessage() {
-		return get("client_away_message");
-	}
-
-	public int getClientChannelGroupID() {
-		return getInteger("client_channel_group_id");
-	}
-
-	public String getClientCountry() {
-		return get("client_country");
-	}
-
-	public int getClientDatabaseID() {
-		return getInteger("client_database_id");
-	}
-
-	public int getClientIconId() {
-		return getInteger("client_icon_id");
-	}
-
-	public int getClientID() {
-		return getInteger("clid");
-	}
-
-	public String getClientNickname() {
-		return get("client_nickname");
-	}
-
-	public String[] getClientServerGroups() {
-		return get("client_servergroups").split("[,]");
-	}
-
-	public int getClientTalkPower() {
-		return getInteger("client_talk_power");
-	}
-
-	public int getClientType() {
-		return getInteger("client_type");
-	}
-
-	public String getClientUID() {
-		return get("client_unique_identifier");
-	}
-
-	public boolean isClientAway() {
-		return getBoolean("client_away");
-	}
-
-	public boolean isClientChannelCommander() {
-		return getBoolean("client_is_channel_commander");
-	}
-
-	public boolean isClientInputHardware() {
-		return getBoolean("client_input_hardware");
-	}
-
-	public boolean isClientInputMuted() {
-		return getBoolean("client_input_muted");
-	}
-
-	public boolean isClientMuted() {
-		return getBoolean("client_is_muted");
-	}
-
-	public boolean isClientOutputHardware() {
-		return getBoolean("client_output_hardware");
-	}
-
-	public boolean isClientOutputMuted() {
-		return getBoolean("client_output_muted");
-	}
-
-	public boolean isClientPrioritySpeaker() {
-		return getBoolean("client_is_priority_speaker");
-	}
-
-	public boolean isClientRecording() {
-		return getBoolean("client_is_recording");
-	}
-
-	public boolean isClientTalker() {
-		return getBoolean("client_is_talker");
-	}
-
-	public boolean isClientTalking() {
-		return getBoolean("client_flag_talking");
-	}
 }

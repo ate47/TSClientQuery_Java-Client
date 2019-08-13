@@ -1,4 +1,4 @@
-package fr.harmonia.tsclientquery.channel;
+package fr.harmonia.tsclientquery.objects;
 
 public enum EnumChannelProperty {
 	are_subscribed("are_subscribed", true),

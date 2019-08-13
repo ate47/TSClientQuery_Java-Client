@@ -1,6 +1,6 @@
 package fr.harmonia.tsclientquery.query;
 
-import fr.harmonia.tsclientquery.channel.ChannelProperty;
+import fr.harmonia.tsclientquery.objects.ChannelProperty;
 
 public class ChannelEditQuery extends NoAnswerQuery {
 

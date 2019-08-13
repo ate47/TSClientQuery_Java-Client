@@ -1,7 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.BanAnswer;
-import fr.harmonia.tsclientquery.ban.Ban;
+import fr.harmonia.tsclientquery.objects.Ban;
 
 /*
 

@@ -1,5 +1,6 @@
 package fr.harmonia.tsclientquery.event;
 
+import fr.harmonia.tsclientquery.objects.Client;
 import fr.harmonia.tsclientquery.query.BanListQuery;
 import fr.harmonia.tsclientquery.query.ChannelClientPermListQuery;
 
@@ -43,12 +44,34 @@ public enum EnumEvent {
 
 	notifyclientdbidfromuid("notifyclientdbidfromuid"),
 
+	/**
+	 * @see Handler#onClientEnterView(int, int, int, Client)
+	 * @see Handler#onClientEnterViewMoved(int, int, int, int, String, String,
+	 *      Client)
+	 * @see Handler#onClientKickFromChannelOutOfView(int, int, int, int, String,
+	 *      String, String, Client)
+	 * @see Handler#onClientConnect(int, int, Client)
+	 * @see Handler#onClientConnect(int, int, Client)
+	 */
 	notifycliententerview("notifycliententerview"),
 
 	notifyclientids("notifyclientids"),
 
+	/**
+	 * @see Handler#onClientDisconnect(int, int, int)
+	 * @see Handler#onClientKickFromChannel(int, int, int, String, String, String,
+	 *      int)
+	 * @see Handler#onClientKickFromServer(int, int, int, String, String, String,
+	 *      int)
+	 * @see Handler#onClientLeftView(int, int, int)
+	 */
 	notifyclientleftview("notifyclientleftview"),
 
+	/**
+	 * @see Handler#onClientMove(int, int, int)
+	 * @see Handler#onClientDisconnect(int, int, int)
+	 * @see Handler#onClientMovedByOther(int, int, int, String, String, int)
+	 */
 	notifyclientmoved("notifyclientmoved"),
 
 	notifyclientnamefromdbid("notifyclientnamefromdbid"),
@@ -70,6 +93,9 @@ public enum EnumEvent {
 
 	notifyconnectstatuschange("notifyconnectstatuschange"),
 
+	/**
+	 * @see Handler#onChangeCurrentServerConnection(int)
+	 */
 	notifycurrentserverconnectionchanged("notifycurrentserverconnectionchanged"),
 
 	notifymessage("notifymessage"),

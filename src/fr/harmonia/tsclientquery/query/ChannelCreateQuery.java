@@ -1,7 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
-import fr.harmonia.tsclientquery.channel.ChannelProperty;
-import fr.harmonia.tsclientquery.channel.EnumChannelProperty;
+import fr.harmonia.tsclientquery.objects.ChannelProperty;
+import fr.harmonia.tsclientquery.objects.EnumChannelProperty;
 
 /*
 help channelcreate

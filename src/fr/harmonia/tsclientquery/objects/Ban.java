@@ -1,4 +1,4 @@
-package fr.harmonia.tsclientquery.ban;
+package fr.harmonia.tsclientquery.objects;
 
 public class Ban {
 	private String banreason;

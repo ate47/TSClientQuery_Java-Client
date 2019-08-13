@@ -1,4 +1,4 @@
-package fr.harmonia.tsclientquery.ban;
+package fr.harmonia.tsclientquery.objects;
 
 /*
 banid=2 ip name=Le\struc uid mytsid lastnickname created=1565268333 duration=0 

@@ -1,5 +1,6 @@
-package fr.harmonia.tsclientquery.ban;
+package fr.harmonia.tsclientquery.objects.builder;
 
+import fr.harmonia.tsclientquery.objects.Ban;
 
 public class BanBuilder {
 

@@ -1,7 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
-import fr.harmonia.tsclientquery.ban.ClientBan;
+import fr.harmonia.tsclientquery.objects.ClientBan;
 
 /*
 Usage: banclient clid={clientID}|cldbid={clientDatabaseID}|uid={clientUID} \

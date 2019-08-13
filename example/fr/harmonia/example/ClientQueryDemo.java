@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
-import fr.harmonia.tsclientquery.ban.DataBaseBan;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
+import fr.harmonia.tsclientquery.objects.DataBaseBan;
 
 public class ClientQueryDemo {
 
@@ -21,7 +21,11 @@ public class ClientQueryDemo {
 
 //			testReceiveMsg(client);
 //			testSendMsg(client);
-			testGetBanList(client);
+//			testGetBanList(client);
+			
+			int serverConnection = client.currentServerConnectionHandlerID();
+			
+			client.clientNotifyRegister(serverConnection, EnumEvent.notifycliententerview);
 
 		} catch (IOException e) {
 			e.printStackTrace();
