@@ -30,6 +30,7 @@ import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.ban.Ban;
 import fr.harmonia.tsclientquery.ban.ClientBan;
 import fr.harmonia.tsclientquery.ban.DataBaseBan;
+import fr.harmonia.tsclientquery.channel.ChannelProperty;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
@@ -57,9 +58,9 @@ import fr.harmonia.tsclientquery.query.ChannelClientPermListQuery;
 import fr.harmonia.tsclientquery.query.ChannelConnectInfoQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery;
 import fr.harmonia.tsclientquery.query.ChannelDeleteQuery;
+import fr.harmonia.tsclientquery.query.ChannelEditQuery;
 import fr.harmonia.tsclientquery.query.ClientKickQuery;
 import fr.harmonia.tsclientquery.query.ClientKickQuery.Reason;
-import fr.harmonia.tsclientquery.query.ChannelCreateQuery.ChannelProperty;
 import fr.harmonia.tsclientquery.query.ClientPokeQuery;
 import fr.harmonia.tsclientquery.query.ConnectQuery;
 import fr.harmonia.tsclientquery.query.CurrentServerConnectionHandlerIdQuery;
@@ -76,6 +77,12 @@ import fr.harmonia.tsclientquery.query.WhoAmIQuery;
 import fr.harmonia.tsclientquery.server.ServerConnection;
 import fr.harmonia.tsclientquery.server.ServerConnectionBuilder;
 
+/**
+ * a client to link with a Teamspeak client with <a
+ * href=https://forum.teamspeak.com/threads/66509-Official-ClientQuery-Plugin>ClientQuery</a>
+ * 
+ * @author ATE47
+ */
 public class TSClientQuery {
 	/**
 	 * the max length of a kick message
@@ -513,7 +520,6 @@ public class TSClientQuery {
 			throws InsufficientClientPermissionsQueryException {
 		sendQuery(new ChannelCreateQuery(name, properties));
 	}
-
 	/**
 	 * get the current server connection handler id
 	 */
@@ -573,6 +579,20 @@ public class TSClientQuery {
 	 */
 	public void disconnect(String message) {
 		sendQuery(new DisconnectQuery(message));
+	}
+
+	/**
+	 * edit a channel
+	 * 
+	 * @param cid the channel ID
+	 * @param properties the channel properties
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 */
+	public void editChannel(int cid, ChannelProperty... properties)
+			throws InsufficientClientPermissionsQueryException {
+		sendQuery(new ChannelEditQuery(cid, properties));
 	}
 
 	/**
