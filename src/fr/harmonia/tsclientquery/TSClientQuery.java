@@ -23,6 +23,7 @@ import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.BanAnswer;
 import fr.harmonia.tsclientquery.answer.ChannelClientListAnswer;
 import fr.harmonia.tsclientquery.answer.ChannelConnectInfoAnswer;
+import fr.harmonia.tsclientquery.answer.ClientFromAnswer;
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
@@ -61,6 +62,9 @@ import fr.harmonia.tsclientquery.query.ChannelConnectInfoQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery;
 import fr.harmonia.tsclientquery.query.ChannelDeleteQuery;
 import fr.harmonia.tsclientquery.query.ChannelEditQuery;
+import fr.harmonia.tsclientquery.query.ClientFromDatabaseIDQuery;
+import fr.harmonia.tsclientquery.query.ClientFromIDQuery;
+import fr.harmonia.tsclientquery.query.ClientFromUIDQuery;
 import fr.harmonia.tsclientquery.query.ClientKickQuery;
 import fr.harmonia.tsclientquery.query.ClientKickQuery.Reason;
 import fr.harmonia.tsclientquery.query.ClientPokeQuery;
@@ -445,6 +449,42 @@ public class TSClientQuery {
 	private void checkStartedClient() throws UnStartedClientException {
 		if (!isStarted())
 			throw new UnStartedClientException();
+	}
+
+	/**
+	 * request client data with his database id, require
+	 * {@link EnumEvent#notifyclientnamefromdbid}
+	 * 
+	 * @param dbid
+	 *            the client database id
+	 * @return client data
+	 */
+	public ClientFromAnswer clientInfoFromDatabaseID(int dbid) {
+		return sendQuery(new ClientFromDatabaseIDQuery(dbid));
+	}
+
+	/**
+	 * request client data with his unique id, require
+	 * {@link EnumEvent#notifyclientnamefromuid}
+	 * 
+	 * @param uid
+	 *            the client unique id
+	 * @return client data
+	 */
+	public ClientFromAnswer clientInfoFromDatabaseUID(String uid) {
+		return sendQuery(new ClientFromUIDQuery(uid));
+	}
+
+	/**
+	 * request client data with his id, require
+	 * {@link EnumEvent#notifyclientuidfromclid}
+	 * 
+	 * @param id
+	 *            the client id
+	 * @return client data
+	 */
+	public ClientFromAnswer clientInfoFromID(int id) {
+		return sendQuery(new ClientFromIDQuery(id));
 	}
 
 	/**

@@ -3,6 +3,9 @@ package fr.harmonia.tsclientquery.event;
 import fr.harmonia.tsclientquery.objects.Client;
 import fr.harmonia.tsclientquery.query.BanListQuery;
 import fr.harmonia.tsclientquery.query.ChannelClientPermListQuery;
+import fr.harmonia.tsclientquery.query.ClientFromDatabaseIDQuery;
+import fr.harmonia.tsclientquery.query.ClientFromIDQuery;
+import fr.harmonia.tsclientquery.query.ClientFromUIDQuery;
 
 public enum EnumEvent {
 	/**
@@ -89,8 +92,14 @@ public enum EnumEvent {
 	 */
 	notifyclientmoved("notifyclientmoved"),
 
+	/**
+	 * use for {@link ClientFromDatabaseIDQuery}
+	 */
 	notifyclientnamefromdbid("notifyclientnamefromdbid"),
 
+	/**
+	 * use for {@link ClientFromUIDQuery}
+	 */
 	notifyclientnamefromuid("notifyclientnamefromuid"),
 
 	/**
@@ -98,6 +107,9 @@ public enum EnumEvent {
 	 */
 	notifyclientpoke("notifyclientpoke"),
 
+	/**
+	 * use for {@link ClientFromIDQuery}
+	 */
 	notifyclientuidfromclid("notifyclientuidfromclid"),
 
 	notifyclientupdated("notifyclientupdated"),
