@@ -30,6 +30,10 @@ public class Channel extends ParsedObject {
 		return getInteger("channel_icon_id");
 	}
 
+	public int getChannelId() {
+		return getInteger("cid");
+	}
+
 	public int getChannelMaxClients() {
 		return getInteger("channel_maxclients");
 	}

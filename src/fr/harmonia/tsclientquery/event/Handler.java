@@ -38,6 +38,26 @@ public interface Handler {
 	}
 
 	/**
+	 * call when a client change the channel parent, require
+	 * {@link EnumEvent#notifychannelmoved}
+	 * 
+	 * @param schandlerid
+	 *            the server connection ID
+	 * @param invokerid
+	 *            client ID of who edited the channel
+	 * @param invokerName
+	 *            client name of who edited the channel
+	 * @param invokerUID
+	 *            client UID of who edited the channel
+	 * @param channel
+	 *            a channel object with only new information (see
+	 *            {@link Channel#ParsedObject(fr.harmonia.tsclientquery.objects.ParsedObject, boolean)})
+	 */
+	default void onChannelChangeParentId(int schandlerid, int invokerid, String invokername, String invokeruid,
+			Channel channel) {
+	}
+
+	/**
 	 * call when a channel is create, require {@link EnumEvent#notifychannelcreated}
 	 * 
 	 * @param schandlerid
@@ -53,7 +73,7 @@ public interface Handler {
 	 * @param channel
 	 *            the channel object
 	 */
-	default void onChannelCreate(int schandlerid, int channelID, int invokerID, String invokerName, String invokerUID,
+	default void onChannelCreate(int schandlerid, int invokerID, String invokerName, String invokerUID,
 			Channel channel) {
 	}
 
@@ -73,7 +93,8 @@ public interface Handler {
 	 *            client UID of who deleted the channel (can be empty if
 	 *            invokerName=Server)
 	 */
-	default void onChannelDeleted(int schandlerid, int channelID, int invokerID, String invokerName, String invokerUID) {
+	default void onChannelDeleted(int schandlerid, int channelID, int invokerID, String invokerName,
+			String invokerUID) {
 	}
 
 	/**
@@ -96,7 +117,7 @@ public interface Handler {
 	 *            a channel object with only new information (see
 	 *            {@link Channel#ParsedObject(fr.harmonia.tsclientquery.objects.ParsedObject, boolean)})
 	 */
-	default void onChannelEdited(int schandlerid, int channelID, int invokerID, String invokerName, String invokerUID,
+	default void onChannelEdited(int schandlerid, int invokerID, String invokerName, String invokerUID,
 			Channel channel) {
 	}
 

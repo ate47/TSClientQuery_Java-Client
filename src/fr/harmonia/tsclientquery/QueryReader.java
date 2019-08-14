@@ -197,23 +197,21 @@ class QueryReader extends Thread {
 									}
 										break;
 									case notifychanneledited: {
-										int channelID = asw.getInteger("cid");
 										int invokerClientID = asw.getInteger("invokerid");
 										String invokerName = asw.get("invokername");
 										String invokerUID = asw.get("invokeruid");
 										Channel channel = new Channel(asw);
-										forEachHandler(h -> h.onChannelEdited(schandlerid, channelID, invokerClientID,
-												invokerName, invokerUID, channel));
+										forEachHandler(h -> h.onChannelEdited(schandlerid, invokerClientID, invokerName,
+												invokerUID, channel));
 									}
 										break;
 									case notifychannelcreated: {
-										int channelID = asw.getInteger("cid");
 										int invokerClientID = asw.getInteger("invokerid");
 										String invokerName = asw.get("invokername");
 										String invokerUID = asw.get("invokeruid");
 										Channel channel = new Channel(asw);
-										forEachHandler(h -> h.onChannelCreate(schandlerid, channelID, invokerClientID,
-												invokerName, invokerUID, channel));
+										forEachHandler(h -> h.onChannelCreate(schandlerid, invokerClientID, invokerName,
+												invokerUID, channel));
 									}
 										break;
 									case notifychanneldeleted: {
@@ -225,6 +223,15 @@ class QueryReader extends Thread {
 												invokerName, invokerUID));
 									}
 										break;
+									case notifychannelmoved: {
+										int invokerClientID = asw.getInteger("invokerid");
+										String invokerName = asw.get("invokername");
+										String invokerUID = asw.get("invokeruid");
+										Channel channel = new Channel(asw);
+										forEachHandler(h -> h.onChannelChangeParentId(schandlerid, invokerClientID,
+												invokerName, invokerUID, channel));
+									}
+										break;
 									case channellist:
 
 										break;
@@ -232,9 +239,6 @@ class QueryReader extends Thread {
 
 										break;
 									case notifybanlist:
-
-										break;
-									case notifychannelmoved:
 
 										break;
 									case notifyclientchatclosed:
