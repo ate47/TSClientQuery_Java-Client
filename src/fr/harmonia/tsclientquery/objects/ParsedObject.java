@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
@@ -12,26 +14,26 @@ import fr.harmonia.tsclientquery.answer.Answer;
 
 public class ParsedObject {
 	@SuppressWarnings("unchecked")
-	public static Map<String, String>[] parseLines(String line) {
+	private static Map<String, String>[] parseLines(String line, IntFunction<Map<String, String>> mapConstructor) {
 		String[] raw = ((line.startsWith("error") ? line.substring("error ".length()) : line).split("\\|"));
 		Map<String, String>[] data;
 
 		if (raw.length == 0 || raw[0].isEmpty()) {
-			data = new Map[] { new HashMap<>() };
+			data = new Map[] { mapConstructor.apply(0) };
 		} else {
 			data = new Map[raw.length];
 
 			for (int i = 0; i < data.length; i++)
-				data[i] = parseMap(raw[i]);
+				data[i] = parseMap(raw[i], mapConstructor);
 		}
 
 		return data;
 	}
 
-	public static Map<String, String> parseMap(String raw) {
+	private static Map<String, String> parseMap(String raw, IntFunction<Map<String, String>> mapConstructor) {
 		String[] arguments = raw.split(" ");
 
-		Map<String, String> data = new HashMap<String, String>(arguments.length != 0 ? arguments.length : 1);
+		Map<String, String> data = mapConstructor.apply(arguments.length != 0 ? arguments.length : 1);
 
 		for (String arg : arguments) {
 			String[] a = arg.split("[=]", 2);
@@ -50,7 +52,7 @@ public class ParsedObject {
 
 	private int index = 0;
 
-	private final String line;
+	private String line;
 
 	protected ParsedObject(ParsedObject p) {
 		this.line = p.line;
@@ -125,10 +127,12 @@ public class ParsedObject {
 	 * map
 	 * 
 	 * @return the argument map
+	 * @deprecated only for internal use
 	 */
-	private Map<String, String>[] getData() {
+	@Deprecated
+	public synchronized Map<String, String>[] getData() {
 		if (data == null)
-			return this.data = parseLines(line);
+			return this.data = parseLines(line, ConcurrentHashMap::new);
 		else
 			return data;
 	}
@@ -212,6 +216,59 @@ public class ParsedObject {
 	 */
 	public int rowsCount() {
 		return getData().length;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void update(Map<String, String>[] newData, boolean reset) {
+		Map<String, String>[] oldData = getData();
+		if (newData.length > oldData.length)
+			synchronized (this) {
+				data = new Map[newData.length];
+				System.arraycopy(oldData, 0, data, 0, oldData.length);
+				for (int i = oldData.length; i < data.length; i++)
+					data[i] = newData[i];
+			}
+		for (int i = 0; i < oldData.length && i < newData.length; i++)
+			newData[i].forEach(data[i]::put);
+
+	}
+
+	/**
+	 * update those data with a new {@link ParsedObject}
+	 * 
+	 * @param object
+	 *            the new object
+	 * @param share
+	 *            if old data must be shared or merge in this object
+	 */
+	public void update(ParsedObject object, boolean share) {
+		if (!share) {
+			update(object.data, share);
+		} else {
+			synchronized (this) {
+				this.line = object.line;
+				data = object.data;
+			}
+		}
+	}
+
+	/**
+	 * update those data with a new line
+	 * 
+	 * @param line
+	 *            the new line
+	 * @param reset
+	 *            if old data must be delete
+	 */
+	public void update(String line, boolean reset) {
+		if (!reset) {
+			update(parseLines(line, HashMap::new), reset);
+		} else {
+			synchronized (this) {
+				this.line = line;
+				data = null;
+			}
+		}
 	}
 
 }

@@ -11,6 +11,7 @@ import fr.harmonia.tsclientquery.answer.OpenAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
+import fr.harmonia.tsclientquery.objects.Channel;
 import fr.harmonia.tsclientquery.objects.Client;
 import fr.harmonia.tsclientquery.query.EventAnswerQuery;
 import fr.harmonia.tsclientquery.query.Query;
@@ -195,6 +196,35 @@ class QueryReader extends Thread {
 										}
 									}
 										break;
+									case notifychanneledited: {
+										int channelID = asw.getInteger("cid");
+										int invokerClientID = asw.getInteger("invokerid");
+										String invokerName = asw.get("invokername");
+										String invokerUID = asw.get("invokeruid");
+										Channel channel = new Channel(asw);
+										forEachHandler(h -> h.onChannelEdited(schandlerid, channelID, invokerClientID,
+												invokerName, invokerUID, channel));
+									}
+										break;
+									case notifychannelcreated: {
+										int channelID = asw.getInteger("cid");
+										int invokerClientID = asw.getInteger("invokerid");
+										String invokerName = asw.get("invokername");
+										String invokerUID = asw.get("invokeruid");
+										Channel channel = new Channel(asw);
+										forEachHandler(h -> h.onChannelCreate(schandlerid, channelID, invokerClientID,
+												invokerName, invokerUID, channel));
+									}
+										break;
+									case notifychanneldeleted: {
+										int invokerClientID = asw.getInteger("invokerid");
+										String invokerName = asw.get("invokername");
+										String invokerUID = asw.get("invokeruid");
+										int channelID = asw.getInteger("cid");
+										forEachHandler(h -> h.onChannelDeleted(schandlerid, channelID, invokerClientID,
+												invokerName, invokerUID));
+									}
+										break;
 									case channellist:
 
 										break;
@@ -202,15 +232,6 @@ class QueryReader extends Thread {
 
 										break;
 									case notifybanlist:
-
-										break;
-									case notifychannelcreated:
-
-										break;
-									case notifychanneldeleted:
-
-										break;
-									case notifychanneledited:
 
 										break;
 									case notifychannelmoved:

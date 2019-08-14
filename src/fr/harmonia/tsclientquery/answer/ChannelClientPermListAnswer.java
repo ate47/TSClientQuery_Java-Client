@@ -3,7 +3,7 @@ package fr.harmonia.tsclientquery.answer;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.harmonia.tsclientquery.perm.Permission;
+import fr.harmonia.tsclientquery.objects.Permission;
 
 public class ChannelClientPermListAnswer extends Answer {
 	private int cid;

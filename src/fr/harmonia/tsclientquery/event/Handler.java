@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery.event;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
+import fr.harmonia.tsclientquery.objects.Channel;
 import fr.harmonia.tsclientquery.objects.Client;
 
 /**
@@ -34,6 +35,69 @@ public interface Handler {
 	 *            the server connection ID
 	 */
 	default void onChangeCurrentServerConnection(int schandlerid) {
+	}
+
+	/**
+	 * call when a channel is create, require {@link EnumEvent#notifychannelcreated}
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler ID
+	 * @param channelID
+	 *            the channel ID
+	 * @param invokerID
+	 *            client ID of who create the channel
+	 * @param invokerName
+	 *            client name of who create the channel
+	 * @param invokerUID
+	 *            client UID of who create the channel
+	 * @param channel
+	 *            the channel object
+	 */
+	default void onChannelCreate(int schandlerid, int channelID, int invokerID, String invokerName, String invokerUID,
+			Channel channel) {
+	}
+
+	/**
+	 * call when a channel is delete, require {@link EnumEvent#notifychanneldeleted}
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler ID
+	 * @param channelID
+	 *            the channel ID
+	 * @param invokerID
+	 *            client ID of who deleted the channel (can be 0 if
+	 *            invokerName=Server)
+	 * @param invokerName
+	 *            client name of who deleted the channel
+	 * @param invokerUID
+	 *            client UID of who deleted the channel (can be empty if
+	 *            invokerName=Server)
+	 */
+	default void onChannelDeleted(int schandlerid, int channelID, int invokerID, String invokerName, String invokerUID) {
+	}
+
+	/**
+	 * call when a channel is edited, require {@link EnumEvent#notifychanneledited}
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler ID
+	 * @param channelID
+	 *            the channel ID
+	 * @param invokerID
+	 *            client ID of who edited the channel (can be 0 after channel
+	 *            creation)
+	 * @param invokerName
+	 *            client name of who edited the channel (can be empty after channel
+	 *            creation)
+	 * @param invokerUID
+	 *            client UID of who edited the channel (can be 0 after channel
+	 *            creation)
+	 * @param channel
+	 *            a channel object with only new information (see
+	 *            {@link Channel#ParsedObject(fr.harmonia.tsclientquery.objects.ParsedObject, boolean)})
+	 */
+	default void onChannelEdited(int schandlerid, int channelID, int invokerID, String invokerName, String invokerUID,
+			Channel channel) {
 	}
 
 	/**
@@ -423,5 +487,4 @@ public interface Handler {
 	default void onPrivateMessage(int schandlerid, String msg, int target, int invokerid, String invokername,
 			String invokeruid) {
 	}
-
 }

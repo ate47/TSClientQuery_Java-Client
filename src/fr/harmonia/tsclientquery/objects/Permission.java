@@ -1,4 +1,4 @@
-package fr.harmonia.tsclientquery.perm;
+package fr.harmonia.tsclientquery.objects;
 
 public class Permission {
 	private int permid, permvalue;

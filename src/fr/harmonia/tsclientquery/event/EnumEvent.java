@@ -24,10 +24,19 @@ public enum EnumEvent {
 	 */
 	notifychannelclientpermlist("notifychannelclientpermlist"),
 
+	/**
+	 * @see Handler#onChannelCreate(int, int, int, String, String, fr.harmonia.tsclientquery.objects.Channel)
+	 */
 	notifychannelcreated("notifychannelcreated"),
 
+	/**
+	 * @see Handler#onChannelDeleted(int, int, int, String, String)
+	 */
 	notifychanneldeleted("notifychanneldeleted"),
 
+	/**
+	 * @see Handler#onChannelEdited(int, int, int, String, String, fr.harmonia.tsclientquery.objects.Channel)
+	 */
 	notifychanneledited("notifychanneledited"),
 
 	notifychannelgrouplist("notifychannelgrouplist"),
