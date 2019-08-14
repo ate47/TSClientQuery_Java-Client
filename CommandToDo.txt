@@ -16,11 +16,7 @@
    clientdbedit                | edit a clients properties identified by clientDBID
    clientdblist                | list all clients stored in the server database
    clientdelperm               | delete a permission from a clientDBID
-   clientgetdbidfromuid        | get the clientDBIDs for a certain client unique id
    clientgetids                | get the clientIDs for a certain client unique id
-   clientgetnamefromdbid       | get the nickname from a client database id
-   clientgetnamefromuid        | get the nickname from a client unique id
-   clientgetuidfromclid        | get the unique id from a clientID
    clientlist                  | list known clients
    clientmove                  | move a client or switch channel ourself
    clientmute                  | mute all voice data from a client

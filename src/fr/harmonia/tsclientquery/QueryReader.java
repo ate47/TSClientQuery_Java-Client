@@ -247,19 +247,7 @@ class QueryReader extends Thread {
 									case notifyclientchatcomposing:
 
 										break;
-									case notifyclientdbidfromuid:
-
-										break;
 									case notifyclientids:
-
-										break;
-									case notifyclientnamefromdbid:
-
-										break;
-									case notifyclientnamefromuid:
-
-										break;
-									case notifyclientuidfromclid:
 
 										break;
 									case notifyclientupdated:
@@ -291,7 +279,6 @@ class QueryReader extends Thread {
 
 										break;
 									default:
-
 										break;
 									}
 								}
@@ -317,9 +304,7 @@ class QueryReader extends Thread {
 			}
 
 			reader.close();
-		} catch (
-
-		IOException e) {
+		} catch (IOException e) {
 		}
 	}
 }
