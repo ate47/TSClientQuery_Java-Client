@@ -93,16 +93,25 @@ public class ChannelClient extends ParsedObject {
 	}
 
 	public SpeakIcon getSpeakIcon() {
-		return isClientOutputHardware()
-				? !isClientOutputMuted()
-						? isClientInputHardware() ? !isClientInputMuted()
-								? isClientTalking()
-										? isClientChannelCommander() ? SpeakIcon.CHANNEL_COMMANDER_SPEAKING
-												: SpeakIcon.SPEAKING
-										: isClientChannelCommander() ? SpeakIcon.CHANNEL_COMMANDER : SpeakIcon.IDLE
-								: SpeakIcon.MICROPHONE_MUTED : SpeakIcon.MICROPHONE_DISABLED
-						: SpeakIcon.SPEAKER_MUTED
-				: SpeakIcon.SPEAKER_DISABLE;
+		if (!isClientOutputHardware())
+			return SpeakIcon.SPEAKER_DISABLE;
+		if (isClientOutputMuted())
+			return SpeakIcon.SPEAKER_MUTED;
+		if (!isClientInputHardware())
+			return SpeakIcon.MICROPHONE_DISABLED;
+		if (isClientMuted())
+			return SpeakIcon.MICROPHONE_MUTED;
+		if (isClientTalking()) {
+			if (isClientChannelCommander())
+				return SpeakIcon.CHANNEL_COMMANDER_SPEAKING;
+			else
+				return SpeakIcon.SPEAKING;
+		}
+		if (isClientChannelCommander())
+			return SpeakIcon.CHANNEL_COMMANDER;
+		else
+			return SpeakIcon.IDLE;
+
 	}
 
 	public boolean isClientAway() {
