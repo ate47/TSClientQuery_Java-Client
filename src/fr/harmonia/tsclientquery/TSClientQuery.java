@@ -47,6 +47,7 @@ import fr.harmonia.tsclientquery.objects.ClientBan;
 import fr.harmonia.tsclientquery.objects.DataBaseBan;
 import fr.harmonia.tsclientquery.objects.Permission;
 import fr.harmonia.tsclientquery.objects.ServerConnection;
+import fr.harmonia.tsclientquery.objects.Token;
 import fr.harmonia.tsclientquery.objects.builder.ServerConnectionBuilder;
 import fr.harmonia.tsclientquery.query.AuthQuery;
 import fr.harmonia.tsclientquery.query.BanAddQuery;
@@ -71,11 +72,15 @@ import fr.harmonia.tsclientquery.query.ClientPokeQuery;
 import fr.harmonia.tsclientquery.query.ConnectQuery;
 import fr.harmonia.tsclientquery.query.CurrentServerConnectionHandlerIdQuery;
 import fr.harmonia.tsclientquery.query.DisconnectQuery;
+import fr.harmonia.tsclientquery.query.EventAnswerQuery;
 import fr.harmonia.tsclientquery.query.HelpQuery;
 import fr.harmonia.tsclientquery.query.Query;
 import fr.harmonia.tsclientquery.query.QueryClientNotifyRegister;
 import fr.harmonia.tsclientquery.query.QueryClientNotifyUnregister;
 import fr.harmonia.tsclientquery.query.SendTextMessageQuery;
+import fr.harmonia.tsclientquery.query.TokenAddQuery;
+import fr.harmonia.tsclientquery.query.TokenDeleteQuery;
+import fr.harmonia.tsclientquery.query.TokenListQuery;
 import fr.harmonia.tsclientquery.query.UseQuery;
 import fr.harmonia.tsclientquery.query.VerifyChannelPasswordQuery;
 import fr.harmonia.tsclientquery.query.VerifyServerPasswordQuery;
@@ -178,6 +183,7 @@ public class TSClientQuery {
 	private QueryReader reader;
 
 	AtomicInteger selectedSchandlerid = new AtomicInteger();
+	AtomicInteger usedSchandlerid = new AtomicInteger();
 	private Socket socket;
 	private boolean started = false;
 	private QueryWritter writter;
@@ -820,6 +826,8 @@ public class TSClientQuery {
 			InvalidParameterQueryException, NotConnectedQueryException, CurrentlyNotPossibleQueryException {
 		checkStartedClient();
 		synchronized (query) {
+			if (query instanceof EventAnswerQuery)
+				((EventAnswerQuery<?>) query).setSCHandlerid(this.usedSchandlerid.get());
 			queue.add(query);
 			try {
 				query.wait();
@@ -976,6 +984,101 @@ public class TSClientQuery {
 			currentQuery.set(null);
 			queue.clear();
 		}
+	}
+
+	/**
+	 * add a server group token to a server, the {@link EnumEvent#notifytokenadd}
+	 * event must be registered
+	 * 
+	 * @param serverGroupID
+	 *            the server group id
+	 * @return the created token
+	 * @throws InsufficientClientPermissionsQueryException
+	 *             if the client hasn't the permission to do this
+	 * @throws QueryException
+	 *             if an error occurred (bad serverGroupID)
+	 * @throws UnRegisterQueryException
+	 *             if the {@link EnumEvent#notifytokenadd} event isn't registered
+	 */
+	public String tokenAdd(int serverGroupID)
+			throws InsufficientClientPermissionsQueryException, UnRegisterQueryException, QueryException {
+		TokenAddQuery q = new TokenAddQuery(serverGroupID);
+		sendQuery(q);
+		if (q.getError().getId() != QueryException.ERROR_ID_OK)
+			throw new QueryException(q.getError());
+		else
+			return q.getAnswer().getToken();
+	}
+
+	/**
+	 * add a channel group token to a server, the {@link EnumEvent#notifytokenadd}
+	 * event must be registered
+	 * 
+	 * @param channelGroupID
+	 *            the channel group id
+	 * @param channelID
+	 *            the channel id
+	 * @return the created token
+	 * @throws InsufficientClientPermissionsQueryException
+	 *             if the client hasn't the permission to do this
+	 * @throws QueryException
+	 *             if an error occurred (bad channelGroupID or channelID) if the
+	 *             {@link EnumEvent#notifytokenadd} event isn't registered
+	 */
+	public String tokenAdd(int channelGroupID, int channelID)
+			throws InsufficientClientPermissionsQueryException, UnRegisterQueryException, QueryException {
+		TokenAddQuery q = new TokenAddQuery(channelGroupID, channelID);
+		sendQuery(q);
+		if (q.getError().getId() != QueryException.ERROR_ID_OK)
+			throw new QueryException(q.getError());
+		else
+			return q.getAnswer().getToken();
+	}
+
+	/**
+	 * delete a token from a server
+	 * 
+	 * @param token
+	 *            the token to delete
+	 * @throws InsufficientClientPermissionsQueryException
+	 *             if the client hasn't the permission to do this
+	 * @throws QueryException
+	 *             if an error occurred (bad token)
+	 */
+	public void tokenDelete(String token) throws InsufficientClientPermissionsQueryException, QueryException {
+		ErrorAnswer a = sendQuery(new TokenDeleteQuery(token));
+		if (a.getId() != QueryException.ERROR_ID_OK)
+			throw new QueryException(a);
+	}
+
+	/**
+	 * list of all tokens of the server, the {@link EnumEvent#notifytokenlist} event
+	 * must be registered
+	 * 
+	 * @return the token list
+	 * @throws InsufficientClientPermissionsQueryException
+	 *             if the client hasn't the permission to do this
+	 * @throws UnRegisterQueryException
+	 *             if the {@link EnumEvent#notifytokenlist} event isn't registered
+	 */
+	public List<Token> tokenList() throws InsufficientClientPermissionsQueryException, UnRegisterQueryException {
+		return sendQuery(new TokenListQuery()).getTokenList();
+	}
+
+	/**
+	 * use and delete a token from a server
+	 * 
+	 * @param token
+	 *            the token to delete
+	 * @throws InsufficientClientPermissionsQueryException
+	 *             if the client hasn't the permission to do this
+	 * @throws QueryException
+	 *             if an error occurred (bad token)
+	 */
+	public void tokenUse(String token) throws InsufficientClientPermissionsQueryException, QueryException {
+		ErrorAnswer a = sendQuery(new TokenDeleteQuery(token));
+		if (a.getId() != QueryException.ERROR_ID_OK)
+			throw new QueryException(a);
 	}
 
 	/**

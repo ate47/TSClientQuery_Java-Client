@@ -2,6 +2,7 @@ package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.ChannelClientPermListAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
 help channelclientpermlist
@@ -28,8 +29,8 @@ public class ChannelClientPermListQuery extends EventAnswerQuery<ChannelClientPe
 	}
 
 	@Override
-	public void buildAnswer(String line) {
-		answer.addLine(line);
+	public void buildAnswer(ParsedObject obj) {
+		answer.addLine(obj);
 	}
 
 }

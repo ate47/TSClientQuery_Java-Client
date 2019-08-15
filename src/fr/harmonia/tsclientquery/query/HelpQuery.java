@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.HelpAnswer;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 public class HelpQuery extends Query<HelpAnswer> {
 
@@ -21,10 +22,10 @@ public class HelpQuery extends Query<HelpAnswer> {
 	}
 
 	@Override
-	public void buildAnswer(String line) {
+	public void buildAnswer(ParsedObject obj) {
 		if (answer == null)
-			answer = new HelpAnswer(line);
+			answer = new HelpAnswer(obj.getLine());
 		else
-			answer.addLine(line);
+			answer.addLine(obj.getLine());
 	}
 }

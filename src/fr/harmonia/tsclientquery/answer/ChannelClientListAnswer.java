@@ -3,6 +3,7 @@ package fr.harmonia.tsclientquery.answer;
 import java.util.List;
 
 import fr.harmonia.tsclientquery.objects.ChannelClient;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
 
@@ -20,8 +21,8 @@ client_icon_id=0 client_country
 public class ChannelClientListAnswer extends Answer {
 	private List<ChannelClient> list;
 
-	public ChannelClientListAnswer(String line) {
-		super(line);
+	public ChannelClientListAnswer(ParsedObject obj) {
+		super(obj);
 		list = convertRowInto(ChannelClient::new);
 	}
 

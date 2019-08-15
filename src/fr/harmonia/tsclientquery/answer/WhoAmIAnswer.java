@@ -1,9 +1,11 @@
 package fr.harmonia.tsclientquery.answer;
 
+import fr.harmonia.tsclientquery.objects.ParsedObject;
+
 public class WhoAmIAnswer extends Answer {
 
-	public WhoAmIAnswer(String line) {
-		super(line);
+	public WhoAmIAnswer(ParsedObject obj) {
+		super(obj);
 	}
 	
 	public int getChannelID() {

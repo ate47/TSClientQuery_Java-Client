@@ -2,6 +2,7 @@ package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
 import fr.harmonia.tsclientquery.objects.ClientBan;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
 Usage: banclient clid={clientID}|cldbid={clientDatabaseID}|uid={clientUID} \
@@ -49,7 +50,7 @@ public class BanClientQuery extends Query<MultipleBanAnswer> {
 	}
 
 	@Override
-	public void buildAnswer(String line) {
-		answer.addBan(line);
+	public void buildAnswer(ParsedObject obj) {
+		answer.addBan(obj);
 	}
 }

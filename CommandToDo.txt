@@ -59,7 +59,3 @@
    servergroupsbyclientid      | get all assigned server groups from a clientDBID
    servervariable              | retrieve specific information about a server
    setclientchannelgroup       | assign a channel group to a client database id
-   tokenadd                    | add a token to a server- or channel group
-   tokendelete                 | delete an existing token from the server
-   tokenlist                   | lists all tokens available on the server
-   tokenuse                    | use a token to gain access to the server

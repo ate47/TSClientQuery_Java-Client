@@ -6,6 +6,7 @@ import fr.harmonia.tsclientquery.query.ChannelClientPermListQuery;
 import fr.harmonia.tsclientquery.query.ClientFromDatabaseIDQuery;
 import fr.harmonia.tsclientquery.query.ClientFromIDQuery;
 import fr.harmonia.tsclientquery.query.ClientFromUIDQuery;
+import fr.harmonia.tsclientquery.query.TokenAddQuery;
 
 public enum EnumEvent {
 	/**
@@ -145,7 +146,17 @@ public enum EnumEvent {
 	 * @see Handler#onMessage(int, int, String, int, String, String)
 	 * @see Handler#onPrivateMessage(int, String, int, int, String, String)
 	 */
-	notifytextmessage("notifytextmessage");
+	notifytextmessage("notifytextmessage"),
+
+	/**
+	 * use for {@link TokenAddQuery}
+	 */
+	notifytokenadd("notifytokenadd"),
+
+	/**
+	 * use for {@link TokenListQuery}
+	 */
+	notifytokenlist("notifytokenlist");
 
 	private String name;
 

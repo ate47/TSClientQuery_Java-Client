@@ -25,11 +25,6 @@ public class ClientQueryDemo {
 			
 			int serverConnection = client.currentServerConnectionHandlerID();
 
-			client.clientNotifyRegister(serverConnection, EnumEvent.notifychannelcreated);
-			client.clientNotifyRegister(serverConnection, EnumEvent.notifychanneldeleted);
-			client.clientNotifyRegister(serverConnection, EnumEvent.notifychanneledited);
-			client.clientNotifyRegister(serverConnection, EnumEvent.notifychannelmoved);
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

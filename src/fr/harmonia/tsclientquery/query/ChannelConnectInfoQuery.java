@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.ChannelConnectInfoAnswer;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
 Usage: channelconnectinfo [cid={channelid}]
@@ -30,8 +31,8 @@ public class ChannelConnectInfoQuery extends Query<ChannelConnectInfoAnswer> {
 	}
 
 	@Override
-	public void buildAnswer(String line) {
-		answer = new ChannelConnectInfoAnswer(line);
+	public void buildAnswer(ParsedObject obj) {
+		answer = new ChannelConnectInfoAnswer(obj);
 	}
 
 }

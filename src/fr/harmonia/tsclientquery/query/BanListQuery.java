@@ -2,6 +2,7 @@ package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.BanListAnswer;
 import fr.harmonia.tsclientquery.event.EnumEvent;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
 Usage: banlist
@@ -34,8 +35,8 @@ public class BanListQuery extends EventAnswerQuery<BanListAnswer> {
 	}
 
 	@Override
-	public void buildAnswer(String line) {
-		answer.addToList(line);
+	public void buildAnswer(ParsedObject obj) {
+		answer.addToList(obj);
 	}
 
 }

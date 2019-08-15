@@ -2,6 +2,7 @@ package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.BanAnswer;
 import fr.harmonia.tsclientquery.objects.Ban;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
 
@@ -44,8 +45,8 @@ public class BanAddQuery extends Query<BanAnswer> {
 	}
 
 	@Override
-	public void buildAnswer(String line) {
-		answer = new BanAnswer(line);
+	public void buildAnswer(ParsedObject obj) {
+		answer = new BanAnswer(obj);
 	}
 
 }

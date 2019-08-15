@@ -1,9 +1,11 @@
 package fr.harmonia.tsclientquery.answer;
 
+import fr.harmonia.tsclientquery.objects.ParsedObject;
+
 public class ChannelConnectInfoAnswer extends Answer {
 
-	public ChannelConnectInfoAnswer(String line) {
-		super(line);
+	public ChannelConnectInfoAnswer(ParsedObject obj) {
+		super(obj);
 	}
 
 	public String getPassword() {

@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.ChannelClientListAnswer;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
 help channelclientlist
@@ -76,8 +77,8 @@ public class ChannelClientListQuery extends Query<ChannelClientListAnswer> {
 	}
 
 	@Override
-	public void buildAnswer(String line) {
-		answer = new ChannelClientListAnswer(line);
+	public void buildAnswer(ParsedObject obj) {
+		answer = new ChannelClientListAnswer(obj);
 	}
 
 }

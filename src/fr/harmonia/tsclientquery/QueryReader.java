@@ -62,15 +62,14 @@ class QueryReader extends Thread {
 						if (rows.length == 2) {
 							try {
 								EnumEvent ev = EnumEvent.valueOf(rows[0]);
+								OpenAnswer asw = new OpenAnswer(rows[1]);
+								int schandlerid = asw.getInteger("schandlerid");
 
 								if (q != null && q instanceof EventAnswerQuery
-										&& ((EventAnswerQuery<?>) q).getListenedEvent() == ev) {
-
-									((EventAnswerQuery<?>) q).buildAnswer(rows[1]);
-
+										&& ((EventAnswerQuery<?>) q).getListenedEvent() == ev
+										&& ((EventAnswerQuery<?>) q).getSCHandlerid() == schandlerid) {
+									((EventAnswerQuery<?>) q).buildAnswer(asw);
 								} else {
-									OpenAnswer asw = new OpenAnswer(rows[1]);
-									int schandlerid = asw.getInteger("schandlerid");
 									switch (ev) {
 									case notifytextmessage: {
 										int targetmode = asw.getInteger("targetmode");
@@ -287,10 +286,10 @@ class QueryReader extends Thread {
 								continue; // wtf?
 							}
 						}
-						// EVENT
 					} else if (line.startsWith("selected schandlerid=")) {
-						client.selectedSchandlerid
-								.set(Integer.parseInt(line.substring("selected schandlerid=".length())));
+						int schandlerid = Integer.parseInt(line.substring("selected schandlerid=".length()));
+						client.selectedSchandlerid.updateAndGet(i -> i == 0 ? schandlerid : i);
+						client.usedSchandlerid.set(schandlerid);
 					} else if (line.startsWith("schandlerid=")) {
 						client.selectedSchandlerid.set(Integer.parseInt(line.substring("schandlerid=".length())));
 					} else if (q != null) {
@@ -298,7 +297,7 @@ class QueryReader extends Thread {
 							q.addError(new ErrorAnswer(line));
 							client.currentQuery.notify();
 						} else
-							q.buildAnswer(line);
+							q.buildAnswer(new OpenAnswer(line));
 					}
 				}
 			}

@@ -1,5 +1,7 @@
 package fr.harmonia.tsclientquery.answer;
 
+import fr.harmonia.tsclientquery.objects.ParsedObject;
+
 /**
  * a basic {@link Answer} with getter by key
  * 
@@ -8,6 +10,9 @@ package fr.harmonia.tsclientquery.answer;
  */
 public class OpenAnswer extends Answer {
 
+	public OpenAnswer(ParsedObject obj) {
+		super(obj);
+	}
 	public OpenAnswer(String line) {
 		super(line);
 	}

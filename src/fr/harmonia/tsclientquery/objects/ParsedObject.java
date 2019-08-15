@@ -54,13 +54,13 @@ public class ParsedObject {
 
 	private String line;
 
-	protected ParsedObject(ParsedObject p) {
+	public ParsedObject(ParsedObject p) {
 		this.line = p.line;
 		this.index = p.index;
 		this.data = p.data;
 	}
 
-	protected ParsedObject(String line) {
+	public ParsedObject(String line) {
 		this.line = line;
 	}
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import fr.harmonia.tsclientquery.objects.ParsedObject;
+
 public class MultipleBanAnswer extends Answer implements Iterable<BanAnswer> {
 	private List<BanAnswer> list;
 
@@ -12,8 +14,8 @@ public class MultipleBanAnswer extends Answer implements Iterable<BanAnswer> {
 		list = new ArrayList<>();
 	}
 
-	public void addBan(String line) {
-		list.add(new BanAnswer(line));
+	public void addBan(ParsedObject obj) {
+		list.add(new BanAnswer(obj));
 	}
 
 	@Override

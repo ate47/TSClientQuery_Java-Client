@@ -3,6 +3,7 @@ package fr.harmonia.tsclientquery.answer;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 import fr.harmonia.tsclientquery.objects.Permission;
 
 public class ChannelClientPermListAnswer extends Answer {
@@ -17,8 +18,8 @@ public class ChannelClientPermListAnswer extends Answer {
 		this.perms = new ArrayList<>();
 	}
 
-	public void addLine(String line) {
-		OpenAnswer oa = new OpenAnswer(line);
+	public void addLine(ParsedObject obj) {
+		OpenAnswer oa = new OpenAnswer(obj);
 		while (oa.rowNotEmpty())
 			perms.add(new Permission(oa.getInteger("permid"), oa.getInteger("permvalue"), oa.getBoolean("permnegated"),
 					oa.getBoolean("permskip")));

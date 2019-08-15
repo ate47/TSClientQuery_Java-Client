@@ -1,6 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 public class NoAnswerQuery extends Query<ErrorAnswer> {
 	public static class NoAnswerQueryAnswerException extends IllegalArgumentException {
@@ -13,7 +14,7 @@ public class NoAnswerQuery extends Query<ErrorAnswer> {
 	}
 
 	@Override
-	public void buildAnswer(String line) {
+	public void buildAnswer(ParsedObject obj) {
 		throw new NoAnswerQueryAnswerException();
 	}
 

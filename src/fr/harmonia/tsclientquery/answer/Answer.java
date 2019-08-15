@@ -12,7 +12,11 @@ import fr.harmonia.tsclientquery.query.Query;
  */
 public class Answer extends ParsedObject {
 
-	protected Answer(String line) {
+	public Answer(ParsedObject obj) {
+		super(obj);
+	}
+
+	public Answer(String line) {
 		super(line);
 	}
 

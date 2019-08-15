@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import fr.harmonia.tsclientquery.TSClientQuery;
 import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
+import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 public abstract class Query<T extends Answer> {
 	protected T answer;
@@ -21,7 +22,7 @@ public abstract class Query<T extends Answer> {
 		this.name = name;
 	}
 
-	public abstract void buildAnswer(String line);
+	public abstract void buildAnswer(ParsedObject obj);
 
 	protected void addArgument(String key, Object value) {
 		String k = TSClientQuery.encodeQueryStringParameter(key);
