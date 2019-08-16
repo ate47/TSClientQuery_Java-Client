@@ -14,6 +14,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,15 +22,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.BanAnswer;
-import fr.harmonia.tsclientquery.answer.ChannelClientListAnswer;
 import fr.harmonia.tsclientquery.answer.ChannelConnectInfoAnswer;
 import fr.harmonia.tsclientquery.answer.ClientFromAnswer;
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
+import fr.harmonia.tsclientquery.event.AsynchronousEventExecutor;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
+import fr.harmonia.tsclientquery.event.RunnablesExecutor;
+import fr.harmonia.tsclientquery.event.SynchronousEventExecutor;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
 import fr.harmonia.tsclientquery.exception.CommandNotFoundException;
 import fr.harmonia.tsclientquery.exception.CurrentlyNotPossibleQueryException;
@@ -42,6 +45,7 @@ import fr.harmonia.tsclientquery.exception.UnRegisterQueryException;
 import fr.harmonia.tsclientquery.exception.UnStartedClientException;
 import fr.harmonia.tsclientquery.exception.WrongAuthKeyException;
 import fr.harmonia.tsclientquery.objects.Ban;
+import fr.harmonia.tsclientquery.objects.ChannelClient;
 import fr.harmonia.tsclientquery.objects.ChannelProperty;
 import fr.harmonia.tsclientquery.objects.ClientBan;
 import fr.harmonia.tsclientquery.objects.DataBaseBan;
@@ -68,6 +72,8 @@ import fr.harmonia.tsclientquery.query.ClientFromIDQuery;
 import fr.harmonia.tsclientquery.query.ClientFromUIDQuery;
 import fr.harmonia.tsclientquery.query.ClientKickQuery;
 import fr.harmonia.tsclientquery.query.ClientKickQuery.Reason;
+import fr.harmonia.tsclientquery.query.ClientListQuery;
+import fr.harmonia.tsclientquery.query.ClientMoveQuery;
 import fr.harmonia.tsclientquery.query.ClientPokeQuery;
 import fr.harmonia.tsclientquery.query.ConnectQuery;
 import fr.harmonia.tsclientquery.query.CurrentServerConnectionHandlerIdQuery;
@@ -180,6 +186,7 @@ public class TSClientQuery {
 	final List<Handler> HANDLERS = new ArrayList<>();
 	private final int port;
 	final BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
+	RunnablesExecutor executor = new AsynchronousEventExecutor();
 	private QueryReader reader;
 
 	AtomicInteger selectedSchandlerid = new AtomicInteger();
@@ -382,10 +389,10 @@ public class TSClientQuery {
 	 * 
 	 * @param cid
 	 *            the channel ID
-	 * @return the {@link ChannelClientListAnswer}
+	 * @return the list of {@link ChannelClient}
 	 */
-	public ChannelClientListAnswer channelClientList(int cid) {
-		return sendQuery(new ChannelClientListQuery(cid));
+	public List<ChannelClient> channelClientList(int cid) {
+		return sendQuery(new ChannelClientListQuery(cid)).getChannelClientList();
 	}
 
 	/**
@@ -405,11 +412,12 @@ public class TSClientQuery {
 	 *            get client icon?
 	 * @param country
 	 *            get client country?
-	 * @return the {@link ChannelClientListAnswer}
+	 * @return the list of {@link ChannelClient}
 	 */
-	public ChannelClientListAnswer channelClientList(int cid, boolean uid, boolean away, boolean voice, boolean groups,
+	public List<ChannelClient> channelClientList(int cid, boolean uid, boolean away, boolean voice, boolean groups,
 			boolean icon, boolean country) {
-		return sendQuery(new ChannelClientListQuery(cid, uid, away, voice, groups, icon, country));
+		return sendQuery(new ChannelClientListQuery(cid, uid, away, voice, groups, icon, country))
+				.getChannelClientList();
 	}
 
 	/**
@@ -491,6 +499,69 @@ public class TSClientQuery {
 	 */
 	public ClientFromAnswer clientInfoFromID(int id) {
 		return sendQuery(new ClientFromIDQuery(id));
+	}
+
+	/**
+	 * get the client list of a server (without unsubscribable channels)
+	 * 
+	 * @return the list of {@link ChannelClient}
+	 */
+	public List<ChannelClient> clientList() {
+		return sendQuery(new ClientListQuery()).getChannelClientList();
+	}
+
+	/**
+	 * get the client list of a server (without unsubscribable channels)
+	 * 
+	 * @param uid
+	 *            get client UID?
+	 * @param away
+	 *            get client away?
+	 * @param voice
+	 *            get client voice state?
+	 * @param groups
+	 *            get client groups?
+	 * @param icon
+	 *            get client icon?
+	 * @param country
+	 *            get client country?
+	 * @return the list of {@link ChannelClient}
+	 */
+	public List<ChannelClient> clientList(boolean uid, boolean away, boolean voice, boolean groups, boolean icon,
+			boolean country) {
+		return sendQuery(new ClientListQuery(uid, away, voice, groups, icon, country)).getChannelClientList();
+	}
+
+	/**
+	 * move clients to a channel
+	 * 
+	 * @param cid
+	 *            the channel id
+	 * @param clids
+	 *            the client IDs to move
+	 * @throws InsufficientClientPermissionsQueryException
+	 *             if the client haven't the permission to do this command
+	 * @see TSClientQuery#clientMove(int, String, int...)
+	 */
+	public void clientMove(int cid, int... clids) throws InsufficientClientPermissionsQueryException {
+		sendQuery(new ClientMoveQuery(cid, clids));
+	}
+
+	/**
+	 * move clients to a channel
+	 * 
+	 * @param cid
+	 *            the channel id
+	 * @param password
+	 *            the password of this channel
+	 * @param clids
+	 *            the client IDs to move
+	 * @throws InsufficientClientPermissionsQueryException
+	 *             if the client haven't the permission to do this command
+	 * @see TSClientQuery#clientMove(int, int...)
+	 */
+	public void clientMove(int cid, String password, int... clids) throws InsufficientClientPermissionsQueryException {
+		sendQuery(new ClientMoveQuery(cid, password, clids));
 	}
 
 	/**
@@ -914,15 +985,36 @@ public class TSClientQuery {
 	}
 
 	/**
+	 * set the {@link RunnablesExecutor} to execute notify event, default
+	 * implementation is {@link AsynchronousEventExecutor}
+	 * 
+	 * @param runnablesExecutor
+	 *            the runnables executor
+	 * @throws NullPointerException
+	 *             if runnablesExecutor is null
+	 * @see AsynchronousEventExecutor
+	 * @see SynchronousEventExecutor
+	 */
+	public synchronized void setEventExecutor(RunnablesExecutor runnablesExecutor) {
+		Objects.requireNonNull(runnablesExecutor);
+		executor.stop();
+		this.executor = runnablesExecutor;
+		if (isStarted())
+			runnablesExecutor.start();
+	}
+
+	/**
 	 * Set the flood rate between every queries, default value is 250
 	 * 
 	 * @param floodRate
 	 *            the flood rate in millis
 	 */
-	public synchronized void setFloodRate(long floodRate) {
+	public void setFloodRate(long floodRate) {
 		if (floodRate < 0)
 			throw new IllegalArgumentException("Negative flood rate!");
-		this.floodRate = floodRate;
+		synchronized (this) {
+			this.floodRate = floodRate;
+		}
 	}
 
 	/**
@@ -941,6 +1033,8 @@ public class TSClientQuery {
 
 		currentQuery.set(null);
 		queue.clear();
+
+		executor.start();
 
 		reader = new QueryReader(this, socket.getInputStream());
 		writter = new QueryWritter(this, socket.getOutputStream());
@@ -969,6 +1063,7 @@ public class TSClientQuery {
 		reader.interrupt();
 		writter.interrupt();
 		socket.close();
+		executor.stop();
 
 		try {
 			writter.join();

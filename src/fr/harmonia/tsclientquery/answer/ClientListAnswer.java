@@ -1,5 +1,6 @@
 package fr.harmonia.tsclientquery.answer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.harmonia.tsclientquery.objects.ChannelClient;
@@ -18,12 +19,15 @@ client_talk_power=0 client_is_talker=0 client_is_priority_speaker=0 client_is_re
 client_is_muted=0 client_unique_identifier=Wk+H5VFRlAfGpj1nFwMjrS+Iv7s= client_servergroups=8 client_channel_group_id=8
 client_icon_id=0 client_country
  */
-public class ChannelClientListAnswer extends Answer {
-	private List<ChannelClient> list;
+public class ClientListAnswer extends Answer {
+	private List<ChannelClient> list = new ArrayList<>();
 
-	public ChannelClientListAnswer(ParsedObject obj) {
-		super(obj);
-		list = convertRowInto(ChannelClient::new);
+	public ClientListAnswer() {
+		super("");
+	}
+
+	public void addClients(ParsedObject obj) {
+		list.addAll(convertRowInto(ChannelClient::new));
 	}
 
 	public List<ChannelClient> getChannelClientList() {

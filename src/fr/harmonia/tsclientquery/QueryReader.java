@@ -25,8 +25,8 @@ class QueryReader extends Thread {
 		this.stream = stream;
 	}
 
-	private void forEachHandler(Consumer<Handler> h) {
-		client.HANDLERS.forEach(h);
+	private void forEachHandlerSync(Consumer<Handler> h) {
+		client.executor.add(() -> client.HANDLERS.forEach(h));
 	}
 
 	@Override
@@ -80,13 +80,13 @@ class QueryReader extends Thread {
 										switch (targetmode) {
 										case 2: // Channel
 										case 3: // Server
-											forEachHandler(h -> h.onMessage(schandlerid, targetmode, msg, invokerid,
+											forEachHandlerSync(h -> h.onMessage(schandlerid, targetmode, msg, invokerid,
 													invokername, invokeruid));
 											break;
 										case 1: // Client
 											int target = asw.getInteger("target");
-											forEachHandler(h -> h.onPrivateMessage(schandlerid, msg, target, invokerid,
-													invokername, invokeruid));
+											forEachHandlerSync(h -> h.onPrivateMessage(schandlerid, msg, target,
+													invokerid, invokername, invokeruid));
 											break;
 										}
 									}
@@ -96,20 +96,21 @@ class QueryReader extends Thread {
 										int invokerid = asw.getInteger("invokerid");
 										String invokername = asw.get("invokername");
 										String invokeruid = asw.get("invokeruid");
-										forEachHandler(
+										forEachHandlerSync(
 												h -> h.onPoke(schandlerid, invokerid, msg, invokername, invokeruid));
 									}
 										break;
 									case notifycurrentserverconnectionchanged:
 										client.selectedSchandlerid.set(schandlerid);
-										forEachHandler(h -> h.onChangeCurrentServerConnection(schandlerid));
+										forEachHandlerSync(h -> h.onChangeCurrentServerConnection(schandlerid));
 										break;
 									case notifyclientmoved: {
 										int channelTargetID = asw.getInteger("ctid");
 										int clientID = asw.getInteger("clid");
 										switch (asw.getInteger("reasonid")) {
 										case 0: { // itself
-											forEachHandler(h -> h.onClientMove(schandlerid, channelTargetID, clientID));
+											forEachHandlerSync(
+													h -> h.onClientMove(schandlerid, channelTargetID, clientID));
 										}
 											break;
 										case 1: { // by other
@@ -127,9 +128,9 @@ class QueryReader extends Thread {
 											String invokerName = asw.get("invokername");
 											String invokerUID = asw.get("invokeruid");
 											String reasonmsg = asw.get("reasonmsg");
-											forEachHandler(h -> h.onClientKickFromChannel(schandlerid, channelTargetID,
-													invokerClientID, invokerName, invokerUID, reasonmsg,
-													invokerClientID));
+											forEachHandlerSync(h -> h.onClientKickFromChannel(schandlerid,
+													channelTargetID, invokerClientID, invokerName, invokerUID,
+													reasonmsg, invokerClientID));
 
 										}
 											break;
@@ -140,7 +141,7 @@ class QueryReader extends Thread {
 										int channelTargetID = asw.getInteger("ctid");
 										int clientID = asw.getInteger("clid");
 										if (channelTargetID != 0) { // move out
-											forEachHandler(
+											forEachHandlerSync(
 													h -> h.onClientLeftView(schandlerid, channelTargetID, clientID));
 										} else { // disconnect
 											int channelFromID = asw.getInteger("cfid");
@@ -149,10 +150,11 @@ class QueryReader extends Thread {
 												String invokerName = asw.get("invokername");
 												String invokerUID = asw.get("invokeruid");
 												String reasonmsg = asw.get("reasonmsg");
-												forEachHandler(h -> h.onClientKickFromServer(schandlerid, channelFromID,
-														invokerClientID, invokerName, invokerUID, reasonmsg, clientID));
+												forEachHandlerSync(h -> h.onClientKickFromServer(schandlerid,
+														channelFromID, invokerClientID, invokerName, invokerUID,
+														reasonmsg, clientID));
 											} else {
-												forEachHandler(h -> h.onClientDisconnect(schandlerid, channelFromID,
+												forEachHandlerSync(h -> h.onClientDisconnect(schandlerid, channelFromID,
 														clientID));
 											}
 										}
@@ -165,10 +167,10 @@ class QueryReader extends Thread {
 										switch (asw.getInteger("reasonid")) {
 										case 0: // move or co
 											if (channelFromID == 0) { // connection
-												forEachHandler(
+												forEachHandlerSync(
 														h -> h.onClientConnect(schandlerid, channelToID, client));
 											} else { // move
-												forEachHandler(h -> h.onClientEnterView(schandlerid, channelFromID,
+												forEachHandlerSync(h -> h.onClientEnterView(schandlerid, channelFromID,
 														channelToID, client));
 											}
 											break;
@@ -176,7 +178,7 @@ class QueryReader extends Thread {
 											int invokerClientID = asw.getInteger("invokerid");
 											String invokerName = asw.get("invokername");
 											String invokerUID = asw.get("invokeruid");
-											forEachHandler(h -> h.onClientEnterViewMoved(schandlerid, channelFromID,
+											forEachHandlerSync(h -> h.onClientEnterViewMoved(schandlerid, channelFromID,
 													channelToID, invokerClientID, invokerName, invokerUID, client));
 										}
 											break;
@@ -185,7 +187,7 @@ class QueryReader extends Thread {
 											String invokerName = asw.get("invokername");
 											String invokerUID = asw.get("invokeruid");
 											String reasonmsg = asw.get("reasonmsg");
-											forEachHandler(h -> h.onClientKickFromChannelOutOfView(schandlerid,
+											forEachHandlerSync(h -> h.onClientKickFromChannelOutOfView(schandlerid,
 													channelFromID, channelToID, invokerClientID, invokerName,
 													invokerUID, reasonmsg, client));
 										}
@@ -200,8 +202,8 @@ class QueryReader extends Thread {
 										String invokerName = asw.get("invokername");
 										String invokerUID = asw.get("invokeruid");
 										Channel channel = new Channel(asw);
-										forEachHandler(h -> h.onChannelEdited(schandlerid, invokerClientID, invokerName,
-												invokerUID, channel));
+										forEachHandlerSync(h -> h.onChannelEdited(schandlerid, invokerClientID,
+												invokerName, invokerUID, channel));
 									}
 										break;
 									case notifychannelcreated: {
@@ -209,8 +211,8 @@ class QueryReader extends Thread {
 										String invokerName = asw.get("invokername");
 										String invokerUID = asw.get("invokeruid");
 										Channel channel = new Channel(asw);
-										forEachHandler(h -> h.onChannelCreate(schandlerid, invokerClientID, invokerName,
-												invokerUID, channel));
+										forEachHandlerSync(h -> h.onChannelCreate(schandlerid, invokerClientID,
+												invokerName, invokerUID, channel));
 									}
 										break;
 									case notifychanneldeleted: {
@@ -218,8 +220,8 @@ class QueryReader extends Thread {
 										String invokerName = asw.get("invokername");
 										String invokerUID = asw.get("invokeruid");
 										int channelID = asw.getInteger("cid");
-										forEachHandler(h -> h.onChannelDeleted(schandlerid, channelID, invokerClientID,
-												invokerName, invokerUID));
+										forEachHandlerSync(h -> h.onChannelDeleted(schandlerid, channelID,
+												invokerClientID, invokerName, invokerUID));
 									}
 										break;
 									case notifychannelmoved: {
@@ -227,7 +229,7 @@ class QueryReader extends Thread {
 										String invokerName = asw.get("invokername");
 										String invokerUID = asw.get("invokeruid");
 										Channel channel = new Channel(asw);
-										forEachHandler(h -> h.onChannelChangeParentId(schandlerid, invokerClientID,
+										forEachHandlerSync(h -> h.onChannelChangeParentId(schandlerid, invokerClientID,
 												invokerName, invokerUID, channel));
 									}
 										break;

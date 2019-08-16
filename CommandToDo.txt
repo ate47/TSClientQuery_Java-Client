@@ -17,12 +17,8 @@
    clientdblist                | list all clients stored in the server database
    clientdelperm               | delete a permission from a clientDBID
    clientgetids                | get the clientIDs for a certain client unique id
-   clientlist                  | list known clients
-   clientmove                  | move a client or switch channel ourself
    clientmute                  | mute all voice data from a client
    clientunmute                | unmute a previously muted client
-   clientnotifyregister        | register to receive client notifications
-   clientnotifyunregister      | unregister from receiving client notifications
    clientpermlist              | list all assigned permissions from a clientDBID
    clientupdate                | set personal client variables, like your nickname
    clientvariable              | retrieve specific information about a client

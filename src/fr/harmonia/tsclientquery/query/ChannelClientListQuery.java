@@ -1,6 +1,6 @@
 package fr.harmonia.tsclientquery.query;
 
-import fr.harmonia.tsclientquery.answer.ChannelClientListAnswer;
+import fr.harmonia.tsclientquery.answer.ClientListAnswer;
 import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
@@ -53,7 +53,7 @@ Example:
 
 error id=0 msg=ok
  */
-public class ChannelClientListQuery extends Query<ChannelClientListAnswer> {
+public class ChannelClientListQuery extends Query<ClientListAnswer> {
 	public ChannelClientListQuery(int cid) {
 		this(cid, true, true, true, true, true, true);
 	}
@@ -74,11 +74,12 @@ public class ChannelClientListQuery extends Query<ChannelClientListAnswer> {
 			addOption("-icon");
 		if (country)
 			addOption("-country");
+		answer = new ClientListAnswer();
 	}
 
 	@Override
 	public void buildAnswer(ParsedObject obj) {
-		answer = new ChannelClientListAnswer(obj);
+		answer.addClients(obj);
 	}
 
 }

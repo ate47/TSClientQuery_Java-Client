@@ -194,6 +194,10 @@ public class ParsedObject {
 		return getLong(index, key);
 	}
 
+	protected void set(String key, Object value) {
+		getData()[index].put(key, String.valueOf(value));
+	}
+
 	/**
 	 * go to the next row combine with {@link Answer#rowNotEmpty()} to create an
 	 * iterator
@@ -219,7 +223,7 @@ public class ParsedObject {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void update(Map<String, String>[] newData, boolean reset) {
+	private void update(Map<String, String>[] newData) {
 		Map<String, String>[] oldData = getData();
 		if (newData.length > oldData.length)
 			synchronized (this) {
@@ -243,7 +247,7 @@ public class ParsedObject {
 	 */
 	public void update(ParsedObject object, boolean share) {
 		if (!share) {
-			update(object.data, share);
+			update(object.data);
 		} else {
 			synchronized (this) {
 				this.line = object.line;
@@ -262,7 +266,7 @@ public class ParsedObject {
 	 */
 	public void update(String line, boolean reset) {
 		if (!reset) {
-			update(parseLines(line, HashMap::new), reset);
+			update(parseLines(line, HashMap::new));
 		} else {
 			synchronized (this) {
 				this.line = line;

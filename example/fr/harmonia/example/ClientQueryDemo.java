@@ -25,6 +25,7 @@ public class ClientQueryDemo {
 			
 			int serverConnection = client.currentServerConnectionHandlerID();
 
+			client.clientNotifyRegisterAll(serverConnection);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
