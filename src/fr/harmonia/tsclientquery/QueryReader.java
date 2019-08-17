@@ -199,6 +199,12 @@ class QueryReader extends Thread {
 										}
 									}
 										break;
+									case notifyclientupdated: {
+										asw.set("clid", asw.getInteger("clid"));
+										Client client = new Client(asw);
+										forEachHandlerSync(h -> h.onClientUpdated(schandlerid, client));
+									}
+										break;
 									case notifychanneledited: {
 										int invokerClientID = asw.getInteger("invokerid");
 										String invokerName = asw.get("invokername");
@@ -277,9 +283,6 @@ class QueryReader extends Thread {
 
 										break;
 									case notifyclientids:
-
-										break;
-									case notifyclientupdated:
 
 										break;
 									case notifycomplainlist:

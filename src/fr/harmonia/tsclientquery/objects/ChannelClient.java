@@ -54,6 +54,9 @@ public class ChannelClient extends ParsedObject {
 	}
 
 	public SpeakIcon getSpeakIcon() {
+		return getSpeakIcon(true);
+	}
+	public SpeakIcon getSpeakIcon(boolean isInOurChannel) {
 		if (!isClientOutputHardware())
 			return SpeakIcon.SPEAKER_DISABLE;
 		if (isClientOutputMuted())
@@ -62,7 +65,7 @@ public class ChannelClient extends ParsedObject {
 			return SpeakIcon.MICROPHONE_DISABLED;
 		if (isClientMuted())
 			return SpeakIcon.MICROPHONE_MUTED;
-		if (isClientTalking()) {
+		if (isInOurChannel && isClientTalking()) {
 			if (isClientChannelCommander())
 				return SpeakIcon.CHANNEL_COMMANDER_SPEAKING;
 			else

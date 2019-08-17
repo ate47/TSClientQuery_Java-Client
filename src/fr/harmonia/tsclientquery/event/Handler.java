@@ -51,7 +51,7 @@ public interface Handler {
 	 *            client UID of who edited the channel
 	 * @param channel
 	 *            a channel object with only new information (see
-	 *            {@link Channel#ParsedObject(fr.harmonia.tsclientquery.objects.ParsedObject, boolean)})
+	 *            {@link Channel#update(fr.harmonia.tsclientquery.objects.ParsedObject, boolean)})
 	 */
 	default void onChannelChangeParentId(int schandlerid, int invokerid, String invokername, String invokeruid,
 			Channel channel) {
@@ -148,7 +148,6 @@ public interface Handler {
 	 */
 	default void onClientConnect(int schandlerid, int channelToID, Client client) {
 	}
-
 	/**
 	 * call when a client disconnect from the server, require
 	 * {@link EnumEvent#notifyclientleftview}
@@ -444,6 +443,18 @@ public interface Handler {
 	 */
 	default void onClientMovedByOther(int schandlerid, int channelTargetID, int invokerClientID, String invokerName,
 			String invokerUID, int clientID) {
+	}
+
+	/**
+	 * call when a client data is update, require
+	 * {@link EnumEvent#notifyclientupdated}
+	 * @param schandlerid
+	 *            the server connection ID
+	 * @param client
+	 *            a client object with only new information (see
+	 *            {@link Client#update(fr.harmonia.tsclientquery.objects.ParsedObject, boolean)})
+	 */
+	default void onClientUpdated(int schandlerid, Client client) {
 	}
 
 	/**

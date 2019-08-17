@@ -113,6 +113,9 @@ public enum EnumEvent {
 	 */
 	notifyclientuidfromclid("notifyclientuidfromclid"),
 
+	/**
+	 * @see Handler#onClientUpdated(int, Client)
+	 */
 	notifyclientupdated("notifyclientupdated"),
 
 	notifycomplainlist("notifycomplainlist"),
@@ -120,9 +123,9 @@ public enum EnumEvent {
 	notifyconnectioninfo("notifyconnectioninfo"),
 
 	notifyclientneededpermissions("notifyclientneededpermissions"),
-	
+
 	notifychannelsubscribed("notifychannelsubscribed"),
-	
+
 	notifyconnectstatuschange("notifyconnectstatuschange"),
 
 	/**

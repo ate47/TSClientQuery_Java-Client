@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import fr.harmonia.tsclientquery.TSClientQuery;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.event.BasicClientListHandler;
+import fr.harmonia.tsclientquery.event.BasicClientListHandler.ClientListCollection;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
@@ -25,13 +26,17 @@ public class ClientQueryDemo {
 			// testReceiveMsg(client);
 			// testSendMsg(client);
 			// testGetBanList(client);
-			testBasicClientListHandler(client);
-
+			// testBasicClientListHandler(client);
+			 testBasicChannelListHandler(client);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * demo to get a view of clients
+	 */
 	public static void testBasicClientListHandler(TSClientQuery client) {
 		BasicClientListHandler handler = new BasicClientListHandler(client);
 
@@ -40,10 +45,32 @@ public class ClientQueryDemo {
 		handler.init();
 		Collection<Client> clients = handler.getViewClients();
 		for (;;) {
-			System.out.println(clients.stream().map(c -> c.getClientNickname() + " (cid: " + c.getChannelID() + ")")
+			System.out.println(clients.stream().sorted((c1, c2) -> c1.getChannelID() - c2.getChannelID())
+					.map(c -> c.getClientNickname() + " (cid: " + c.getChannelID() + ")")
 					.collect(Collectors.joining("\n")) + "\n--------------------------");
 			try {
 				Thread.sleep(5000L);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	/**
+	 * demo to get a view of clients
+	 */
+	public static void testBasicChannelListHandler(TSClientQuery client) {
+		BasicClientListHandler handler = new BasicClientListHandler(client);
+
+		client.registerHandler(handler);
+
+		handler.init();
+		ClientListCollection clients = handler.getViewClients();
+		for (;;) {
+			System.out.println(clients.getChannelClient().stream()
+					.map(c -> c.getClientNickname() + " (cid: " + c.getChannelID() + ")")
+					.collect(Collectors.joining("\n")) + "\n--------------------------");
+			try {
+				Thread.sleep(2500L);
 			} catch (InterruptedException e) {
 			}
 		}

@@ -6,87 +6,126 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
+import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
 import fr.harmonia.tsclientquery.exception.QueryException;
 import fr.harmonia.tsclientquery.objects.ChannelClient;
 import fr.harmonia.tsclientquery.objects.Client;
 
 public class BasicClientListHandler implements Handler {
-	private class ClientListCollection implements Collection<Client> {
-		private Collection<Client> viewPointedClients;
+	public class ClientListCollection implements Collection<Client> {
+		private ServerConnectionHandlerData data;
+
+		private ClientListCollection() {
+		}
 
 		@Override
 		public boolean add(Client e) {
-			return viewPointedClients.add(e);
+			return data.CLID_TO_CLIENT.values().add(e);
 		}
 
 		@Override
 		public boolean addAll(Collection<? extends Client> c) {
-			return viewPointedClients.addAll(c);
+			return data.CLID_TO_CLIENT.values().addAll(c);
 		}
 
 		@Override
 		public void clear() {
-			viewPointedClients.clear();
+			data.CLID_TO_CLIENT.values().clear();
 		}
 
 		@Override
 		public boolean contains(Object o) {
-			return viewPointedClients.contains(o);
+			return data.CLID_TO_CLIENT.values().contains(o);
 		}
 
 		@Override
 		public boolean containsAll(Collection<?> c) {
-			return viewPointedClients.containsAll(c);
+			return data.CLID_TO_CLIENT.values().containsAll(c);
+		}
+
+		/**
+		 * get static collection of clients in the same channel ID as our connection
+		 */
+		public Collection<Client> getChannelClient() {
+			return getChannelClient(data.cid);
+		}
+
+		/**
+		 * get static collection of clients in a channel
+		 * 
+		 * @param cid
+		 *            the channel id
+		 */
+		public Collection<Client> getChannelClient(int cid) {
+			return data.CLID_TO_CLIENT.values().stream().filter(c -> c.getChannelID() == cid)
+					.collect(Collectors.toList());
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return viewPointedClients.isEmpty();
+			return data.CLID_TO_CLIENT.values().isEmpty();
 		}
 
 		@Override
 		public Iterator<Client> iterator() {
-			return viewPointedClients.iterator();
+			return data.CLID_TO_CLIENT.values().iterator();
 		}
 
 		@Override
 		public boolean remove(Object o) {
-			return viewPointedClients.remove(o);
+			return data.CLID_TO_CLIENT.values().remove(o);
 		}
 
 		@Override
 		public boolean removeAll(Collection<?> c) {
-			return viewPointedClients.removeAll(c);
+			return data.CLID_TO_CLIENT.values().removeAll(c);
 		}
 
 		@Override
 		public boolean retainAll(Collection<?> c) {
-			return viewPointedClients.retainAll(c);
+			return data.CLID_TO_CLIENT.values().retainAll(c);
 		}
 
 		@Override
 		public int size() {
-			return viewPointedClients.size();
+			return data.CLID_TO_CLIENT.values().size();
 		}
 
 		@Override
 		public Object[] toArray() {
-			return viewPointedClients.toArray();
+			return data.CLID_TO_CLIENT.values().toArray();
 		}
 
 		@Override
 		public <T> T[] toArray(T[] a) {
-			return viewPointedClients.toArray(a);
+			return data.CLID_TO_CLIENT.values().toArray(a);
 		}
 
+	}
+
+	private class ServerConnectionHandlerData {
+		ConcurrentMap<Integer, Client> CLID_TO_CLIENT;
+
+		int cid, clid;
+
+		public ServerConnectionHandlerData(ConcurrentMap<Integer, Client> clientMap) {
+			CLID_TO_CLIENT = clientMap;
+		}
+
+		private void doForClient(int clid, Consumer<MutableClient> modifier) {
+			MutableClient client = (MutableClient) CLID_TO_CLIENT.get(clid);
+			if (client != null)
+				modifier.accept(client);
+		}
 	}
 
 	private TSClientQuery client;
 	private final ClientListCollection viewClients = new ClientListCollection();
 	// best name ever
-	private final ConcurrentMap<Integer, ConcurrentMap<Integer, Client>> SCHANDLERID_TO_CLID_TO_CLIENT = new ConcurrentHashMap<>();
+	private final ConcurrentMap<Integer, ServerConnectionHandlerData> SCHANDLERID_TO_SERVERDATA = new ConcurrentHashMap<>();
 
 	public BasicClientListHandler(TSClientQuery client) {
 		this.client = client;
@@ -96,53 +135,70 @@ public class BasicClientListHandler implements Handler {
 		mergeClientOrCreate(schandlerid, client);
 	}
 
+	public ServerConnectionHandlerData createOrGetServerConnectionHandlerData(int schandlerid) {
+		return SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
+				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>()));
+	}
+
 	private void deleteClient(int schandlerid, int clientID) {
 		moveClient(schandlerid, 0, clientID);
 	}
 
-	private void doForClient(int schandlerid, int clid, Consumer<MutableClient> modifier) {
-		ConcurrentMap<Integer, Client> clidMap = SCHANDLERID_TO_CLID_TO_CLIENT.get(schandlerid);
-		if (clidMap == null)
-			return;
-		MutableClient client = (MutableClient) clidMap.get(clid);
-		if (client != null)
-			modifier.accept(client);
-	}
-
 	public Client getClient(int schandlerid, int clid) {
-		ConcurrentMap<Integer, Client> clidMap = SCHANDLERID_TO_CLID_TO_CLIENT.get(schandlerid);
+		ServerConnectionHandlerData data = SCHANDLERID_TO_SERVERDATA.get(schandlerid);
 
-		if (clidMap == null)
+		if (data == null)
 			return null;
 
-		return clidMap.get(clid);
+		return data.CLID_TO_CLIENT.get(clid);
 	}
 
+	/**
+	 * get a view of the {@link Client} of a server connection
+	 * 
+	 * @param schandlerid
+	 *            the server connection to view
+	 * @return a collection of client
+	 */
 	public Collection<Client> getClients(int schandlerid) {
-		return SCHANDLERID_TO_CLID_TO_CLIENT
-				.computeIfAbsent(schandlerid, id -> new ConcurrentHashMap<Integer, Client>()).values();
+		return createOrGetServerConnectionHandlerData(schandlerid).CLID_TO_CLIENT.values();
 	}
 
-	public Collection<Client> getViewClients() {
+	public Collection<Client> getCurrentChannelClients() {
+		return getViewClients().getChannelClient();
+	}
+
+	/**
+	 * get a view of the {@link Client} of the server connection, when the use
+	 * change the connection, it reflex on this collection
+	 * 
+	 * @return a collection of client
+	 */
+	public ClientListCollection getViewClients() {
 		return viewClients;
 	}
 
+	/**
+	 * init the handler
+	 */
 	public void init() {
 		client.clientNotifyRegister(EnumEvent.notifyclientleftview);
 		client.clientNotifyRegister(EnumEvent.notifycliententerview);
 		client.clientNotifyRegister(EnumEvent.notifyclientmoved);
 		client.clientNotifyRegister(EnumEvent.notifycurrentserverconnectionchanged);
 		client.clientNotifyRegister(EnumEvent.notifyconnectstatuschange);
+		client.clientNotifyRegister(EnumEvent.notifyclientupdated);
 
 		int schandlerid = client.currentServerConnectionHandlerID();
+		
 		queryClients(schandlerid);
 
-		viewClients.viewPointedClients = getClients(schandlerid);
+		viewClients.data = createOrGetServerConnectionHandlerData(schandlerid);
 	}
 
 	private void mergeClientOrCreate(int schandlerid, ChannelClient client) {
-		ConcurrentMap<Integer, Client> clidMap = SCHANDLERID_TO_CLID_TO_CLIENT.computeIfAbsent(schandlerid,
-				id -> new ConcurrentHashMap<Integer, Client>());
+		ConcurrentMap<Integer, Client> clidMap = SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
+				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>())).CLID_TO_CLIENT;
 		int clid = client.getClientID();
 		MutableClient old = (MutableClient) clidMap.get(clid);
 		if (old == null) {
@@ -152,9 +208,10 @@ public class BasicClientListHandler implements Handler {
 		}
 	}
 
-	private void mergeClientOrCreate(int schandlerid, List<ChannelClient> clients) {
-		ConcurrentMap<Integer, Client> clidMap = SCHANDLERID_TO_CLID_TO_CLIENT.computeIfAbsent(schandlerid,
-				id -> new ConcurrentHashMap<Integer, Client>());
+	private ServerConnectionHandlerData mergeClientOrCreate(int schandlerid, List<ChannelClient> clients) {
+		ServerConnectionHandlerData data = SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
+				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>()));
+		ConcurrentMap<Integer, Client> clidMap = data.CLID_TO_CLIENT;
 		for (ChannelClient client : clients) {
 			int clid = client.getClientID();
 			MutableClient old = (MutableClient) clidMap.get(clid);
@@ -164,17 +221,24 @@ public class BasicClientListHandler implements Handler {
 				old.update(client, false);
 			}
 		}
+		return data;
 	}
 
 	private void moveClient(int schandlerid, int channelToID, int clientID) {
-		doForClient(schandlerid, clientID, c -> c.changeChannel(channelToID));
+		ServerConnectionHandlerData data = createOrGetServerConnectionHandlerData(schandlerid);
+		data.doForClient(clientID, c -> c.changeChannel(channelToID));
+		if (data.clid == clientID) {
+			data.cid = channelToID;
+			mergeClientOrCreate(schandlerid,
+					client.channelClientList(channelToID, false, false, true, false, false, false));
+		}
 	}
 
 	@Override
 	public void onChangeCurrentServerConnection(int schandlerid) {
-		if (!SCHANDLERID_TO_CLID_TO_CLIENT.containsKey(schandlerid))
+		if (!SCHANDLERID_TO_SERVERDATA.containsKey(schandlerid))
 			queryClients(schandlerid);
-		viewClients.viewPointedClients = getClients(schandlerid);
+		viewClients.data = createOrGetServerConnectionHandlerData(schandlerid);
 	}
 
 	@Override
@@ -233,19 +297,31 @@ public class BasicClientListHandler implements Handler {
 	}
 
 	@Override
+	public void onClientUpdated(int schandlerid, Client client) {
+		mergeClientOrCreate(schandlerid, client);
+	}
+
+	@Override
 	public void onConnectionEstablished(int schandlerid) {
 		queryClients(schandlerid);
 	}
 
 	@Override
 	public void onDisconnected(int schandlerid, int error) {
-		ConcurrentMap<Integer, Client> old = SCHANDLERID_TO_CLID_TO_CLIENT.remove(schandlerid);
-		old.clear();
+		ServerConnectionHandlerData data = SCHANDLERID_TO_SERVERDATA.get(schandlerid);
+		data.cid = 0;
+		data.clid = 0;
+		data.CLID_TO_CLIENT.clear();
 	}
 
 	private void queryClients(int schandlerid) {
 		try {
-			client.use(schandlerid, client -> mergeClientOrCreate(schandlerid, client.clientList()));
+			client.use(schandlerid, client -> {
+				ServerConnectionHandlerData data = mergeClientOrCreate(schandlerid, client.clientList());
+				WhoAmIAnswer wai = client.whoAmI();
+				data.cid = wai.getChannelID();
+				data.clid = wai.getClientID();
+			});
 		} catch (QueryException e) {
 		}
 	}
