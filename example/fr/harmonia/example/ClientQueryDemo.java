@@ -38,14 +38,14 @@ public class ClientQueryDemo {
 		client.registerHandler(handler);
 
 		handler.init();
-		Collection<Client> clients = handler.getClients(client.currentServerConnectionHandlerID());
+		Collection<Client> clients = handler.getViewClients();
 		for (;;) {
+			System.out.println(clients.stream().map(c -> c.getClientNickname() + " (cid: " + c.getChannelID() + ")")
+					.collect(Collectors.joining("\n")) + "\n--------------------------");
 			try {
 				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
 			}
-			System.out.println(clients.stream().map(c -> c.getClientNickname() + " (cid: " + c.getChannelID() + ")")
-					.collect(Collectors.joining("\n")) + "\n--------------------------");
 		}
 	}
 
