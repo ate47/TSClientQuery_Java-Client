@@ -1,5 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
+import java.util.Objects;
+
 import fr.harmonia.tsclientquery.objects.ServerConnection;
 
 /*
@@ -23,6 +25,7 @@ public class ConnectQuery extends NoAnswerQuery {
 
 	public ConnectQuery(ServerConnection serverConnection) {
 		super("connect");
+		Objects.requireNonNull(serverConnection, "serverConnection can't be null");
 		addArgument("address", serverConnection.getServerAddress());
 		String channel = serverConnection.getChannelName();
 		String channel_pw = serverConnection.getChannelPassword();

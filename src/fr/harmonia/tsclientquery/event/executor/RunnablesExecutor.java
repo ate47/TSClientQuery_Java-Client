@@ -1,4 +1,4 @@
-package fr.harmonia.tsclientquery.event;
+package fr.harmonia.tsclientquery.event.executor;
 
 /**
  * an executor to execute runnable

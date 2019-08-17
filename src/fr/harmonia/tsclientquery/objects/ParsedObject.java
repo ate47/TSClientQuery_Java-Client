@@ -1,5 +1,6 @@
 package fr.harmonia.tsclientquery.objects;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.stream.Collectors;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
 import fr.harmonia.tsclientquery.answer.Answer;
@@ -69,9 +69,14 @@ public class ParsedObject {
 	 * @param converter
 	 * @return
 	 */
-	protected <R> List<R> convertRowInto(Function<String, R> converter) {
-		return Arrays.stream(((line.startsWith("error") ? line.substring("error ".length()) : line).split("\\|")))
-				.map(converter).collect(Collectors.toList());
+	public <R> List<R> convertRowInto(Function<ParsedObject, R> converter) {
+		List<R> l = new ArrayList<>();
+		while (rowNotEmpty()) {
+			R r = converter.apply(this);
+			l.add(r);
+			next();
+		}
+		return l;
 	}
 
 	/**
@@ -209,7 +214,7 @@ public class ParsedObject {
 	}
 
 	/**
-	 * true while the row pointed is empty
+	 * true while the row pointed isn't empty
 	 */
 	public boolean rowNotEmpty() {
 		return index != getData().length && !data[index].isEmpty();
@@ -273,6 +278,11 @@ public class ParsedObject {
 				data = null;
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return Arrays.toString(getData());
 	}
 
 }

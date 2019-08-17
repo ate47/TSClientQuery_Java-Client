@@ -119,6 +119,10 @@ public enum EnumEvent {
 
 	notifyconnectioninfo("notifyconnectioninfo"),
 
+	notifyclientneededpermissions("notifyclientneededpermissions"),
+	
+	notifychannelsubscribed("notifychannelsubscribed"),
+	
 	notifyconnectstatuschange("notifyconnectstatuschange"),
 
 	/**

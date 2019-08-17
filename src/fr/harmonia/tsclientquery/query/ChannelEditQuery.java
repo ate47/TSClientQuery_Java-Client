@@ -1,5 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
+import java.util.Objects;
+
 import fr.harmonia.tsclientquery.objects.ChannelProperty;
 
 public class ChannelEditQuery extends NoAnswerQuery {
@@ -8,6 +10,8 @@ public class ChannelEditQuery extends NoAnswerQuery {
 		super("channeledit");
 		addArgument("cid", cid);
 		for (ChannelProperty prop : properties)
-			addArgument(prop.getProperty().getPropertyName(false), prop.getValue());
+			addArgument(
+					Objects.requireNonNull(prop, "ChannelProperty can't be null").getProperty().getPropertyName(false),
+					prop.getValue());
 	}
 }

@@ -19,6 +19,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import fr.harmonia.tsclientquery.answer.Answer;
 import fr.harmonia.tsclientquery.answer.BanAnswer;
@@ -28,11 +29,11 @@ import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.MultipleBanAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
-import fr.harmonia.tsclientquery.event.AsynchronousEventExecutor;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
-import fr.harmonia.tsclientquery.event.RunnablesExecutor;
-import fr.harmonia.tsclientquery.event.SynchronousEventExecutor;
+import fr.harmonia.tsclientquery.event.executor.AsynchronousEventExecutor;
+import fr.harmonia.tsclientquery.event.executor.RunnablesExecutor;
+import fr.harmonia.tsclientquery.event.executor.SynchronousEventExecutor;
 import fr.harmonia.tsclientquery.exception.AlreadyStartedException;
 import fr.harmonia.tsclientquery.exception.CommandNotFoundException;
 import fr.harmonia.tsclientquery.exception.CurrentlyNotPossibleQueryException;
@@ -892,10 +893,11 @@ public class TSClientQuery {
 	 * @throws CurrentlyNotPossibleQueryException
 	 *             if the action is not possible at that time
 	 */
-	public <T extends Answer> T sendQuery(Query<T> query)
+	public synchronized <T extends Answer> T sendQuery(Query<T> query)
 			throws CommandNotFoundException, InsufficientClientPermissionsQueryException, UnRegisterQueryException,
 			InvalidParameterQueryException, NotConnectedQueryException, CurrentlyNotPossibleQueryException {
 		checkStartedClient();
+		Objects.requireNonNull(query, "query can't be null");
 		synchronized (query) {
 			if (query instanceof EventAnswerQuery)
 				((EventAnswerQuery<?>) query).setSCHandlerid(this.usedSchandlerid.get());
@@ -1208,6 +1210,19 @@ public class TSClientQuery {
 	 */
 	public void use(int scHandlerID) {
 		sendQuery(new UseQuery(scHandlerID));
+	}
+
+	/**
+	 * use a certain command to a schandlerID
+	 * 
+	 * @param schandlerID
+	 *            the server connection handler id
+	 * @param and
+	 *            the action to perform
+	 */
+	public synchronized void use(int schandlerID, Consumer<TSClientQuery> and) {
+		use(schandlerID);
+		and.accept(this);
 	}
 
 	/**

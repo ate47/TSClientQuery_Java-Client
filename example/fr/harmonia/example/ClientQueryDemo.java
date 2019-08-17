@@ -1,14 +1,17 @@
 package fr.harmonia.example;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import fr.harmonia.tsclientquery.TSClientQuery;
 import fr.harmonia.tsclientquery.answer.WhoAmIAnswer;
+import fr.harmonia.tsclientquery.event.BasicClientListHandler;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.exception.InsufficientClientPermissionsQueryException;
+import fr.harmonia.tsclientquery.objects.Client;
 import fr.harmonia.tsclientquery.objects.DataBaseBan;
 
 public class ClientQueryDemo {
@@ -19,15 +22,30 @@ public class ClientQueryDemo {
 
 			client.start();
 
-//			testReceiveMsg(client);
-//			testSendMsg(client);
-//			testGetBanList(client);
-			
-			int serverConnection = client.currentServerConnectionHandlerID();
+			// testReceiveMsg(client);
+			// testSendMsg(client);
+			// testGetBanList(client);
+			testBasicClientListHandler(client);
 
-			client.clientNotifyRegisterAll(serverConnection);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static void testBasicClientListHandler(TSClientQuery client) {
+		BasicClientListHandler handler = new BasicClientListHandler(client);
+
+		client.registerHandler(handler);
+
+		handler.init();
+		Collection<Client> clients = handler.getClients(client.currentServerConnectionHandlerID());
+		for (;;) {
+			try {
+				Thread.sleep(5000L);
+			} catch (InterruptedException e) {
+			}
+			System.out.println(clients.stream().map(c -> c.getClientNickname() + " (cid: " + c.getChannelID() + ")")
+					.collect(Collectors.joining("\n")) + "\n--------------------------");
 		}
 	}
 

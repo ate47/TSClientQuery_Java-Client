@@ -27,7 +27,7 @@ public class ClientListAnswer extends Answer {
 	}
 
 	public void addClients(ParsedObject obj) {
-		list.addAll(convertRowInto(ChannelClient::new));
+		list.addAll(obj.convertRowInto(ChannelClient::new));
 	}
 
 	public List<ChannelClient> getChannelClientList() {

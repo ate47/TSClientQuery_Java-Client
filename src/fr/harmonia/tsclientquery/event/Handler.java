@@ -447,6 +447,54 @@ public interface Handler {
 	}
 
 	/**
+	 * call when the client has connect to a server
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler id
+	 */
+	default void onConnected(int schandlerid) {
+	}
+
+	/**
+	 * call when the client want to connect to a server
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler id
+	 */
+	default void onConnecting(int schandlerid) {
+	}
+
+	/**
+	 * call when the client know every channels and ask groups, permissions and
+	 * server data
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler id
+	 */
+	default void onConnectionEstablished(int schandlerid) {
+	}
+
+	/**
+	 * call when the client start asking every channels
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler id
+	 */
+	default void onConnectionEstablishing(int schandlerid) {
+	}
+
+	/**
+	 * call when the client disconnect from a server
+	 * 
+	 * @param schandlerid
+	 *            the server connection handler id
+	 * @param error
+	 *            disconnect error code
+	 */
+	default void onDisconnected(int schandlerid, int error) {
+	}
+
+	/**
 	 * call when the client receive a message, require
 	 * {@link EnumEvent#notifytextmessage}
 	 * 

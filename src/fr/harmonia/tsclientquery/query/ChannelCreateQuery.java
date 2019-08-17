@@ -1,5 +1,7 @@
 package fr.harmonia.tsclientquery.query;
 
+import java.util.Objects;
+
 import fr.harmonia.tsclientquery.objects.ChannelProperty;
 import fr.harmonia.tsclientquery.objects.EnumChannelProperty;
 
@@ -26,7 +28,9 @@ public class ChannelCreateQuery extends NoAnswerQuery {
 		super("channelcreate");
 		addArgument(EnumChannelProperty.name.getPropertyName(false), name);
 		for (ChannelProperty prop : properties)
-			addArgument(prop.getProperty().getPropertyName(false), prop.getValue());
+			addArgument(
+					Objects.requireNonNull(prop, "ChannelProperty can't be null").getProperty().getPropertyName(false),
+					prop.getValue());
 	}
 
 }

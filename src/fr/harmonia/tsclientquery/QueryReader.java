@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import fr.harmonia.tsclientquery.answer.ErrorAnswer;
 import fr.harmonia.tsclientquery.answer.OpenAnswer;
 import fr.harmonia.tsclientquery.answer.RequireRegisterAnswer;
+import fr.harmonia.tsclientquery.event.EnumConnectStatusChangeStatus;
 import fr.harmonia.tsclientquery.event.EnumEvent;
 import fr.harmonia.tsclientquery.event.Handler;
 import fr.harmonia.tsclientquery.objects.Channel;
@@ -163,6 +164,7 @@ class QueryReader extends Thread {
 									case notifycliententerview: {
 										int channelFromID = asw.getInteger("cfid");
 										int channelToID = asw.getInteger("ctid");
+										asw.set("cid", channelToID);
 										Client client = new Client(asw);
 										switch (asw.getInteger("reasonid")) {
 										case 0: // move or co
@@ -233,6 +235,32 @@ class QueryReader extends Thread {
 												invokerName, invokerUID, channel));
 									}
 										break;
+									case notifyconnectstatuschange:
+										try {
+											switch (EnumConnectStatusChangeStatus.valueOf(asw.get("status"))) {
+											case connected:
+												forEachHandlerSync(h -> h.onConnected(schandlerid));
+												break;
+											case connecting:
+												forEachHandlerSync(h -> h.onConnecting(schandlerid));
+												break;
+											case connection_established:
+												forEachHandlerSync(h -> h.onConnectionEstablished(schandlerid));
+												break;
+											case connection_establishing:
+												forEachHandlerSync(h -> h.onConnectionEstablishing(schandlerid));
+												break;
+											case disconnected:
+												int error = asw.getInteger("error");
+												forEachHandlerSync(h -> h.onDisconnected(schandlerid, error));
+												break;
+											default:
+												break;
+											}
+										} catch (IllegalArgumentException e) {
+											e.printStackTrace(); // dafuK?
+										}
+										break;
 									case channellist:
 
 										break;
@@ -258,9 +286,6 @@ class QueryReader extends Thread {
 
 										break;
 									case notifyconnectioninfo:
-
-										break;
-									case notifyconnectstatuschange:
 
 										break;
 									case notifymessagelist:
