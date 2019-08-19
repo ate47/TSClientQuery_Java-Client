@@ -27,8 +27,8 @@ public class ClientQueryDemo {
 			// testSendMsg(client);
 			// testGetBanList(client);
 			// testBasicClientListHandler(client);
-			 testBasicChannelListHandler(client);
-			
+			// testBasicChannelListHandler(client);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
