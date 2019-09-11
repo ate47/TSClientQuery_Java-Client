@@ -181,20 +181,20 @@ public class TSClientQuery {
 
 	private final InetAddress address;
 	private final String apikey;
-	AtomicReference<Query<?>> currentQuery = new AtomicReference<Query<?>>();
-
-	long floodRate = 250L;
-	final List<Handler> HANDLERS = new ArrayList<>();
 	private final int port;
-	final BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
-	RunnablesExecutor executor = new AsynchronousEventExecutor();
-	private QueryReader reader;
 
-	AtomicInteger selectedSchandlerid = new AtomicInteger();
-	AtomicInteger usedSchandlerid = new AtomicInteger();
+	private QueryReader reader;
 	private Socket socket;
 	private boolean started = false;
 	private QueryWritter writter;
+	AtomicReference<Query<?>> currentQuery = new AtomicReference<Query<?>>();
+	RunnablesExecutor executor = new AsynchronousEventExecutor();
+
+	long floodRate = 250L;
+	final List<Handler> HANDLERS = new ArrayList<>();
+	final BlockingQueue<Query<?>> queue = new LinkedBlockingQueue<Query<?>>();
+	AtomicInteger selectedSchandlerid = new AtomicInteger();
+	AtomicInteger usedSchandlerid = new AtomicInteger();
 
 	/**
 	 * create a clientquery to default localhost:25639
@@ -222,15 +222,6 @@ public class TSClientQuery {
 		this.apikey = apikey;
 		this.address = address;
 		this.port = port;
-	}
-
-	private boolean auth() {
-		try {
-			sendQuery(new AuthQuery(apikey));
-		} catch (InvalidParameterQueryException e) {
-			return false;
-		}
-		return true;
 	}
 
 	/**
@@ -459,11 +450,6 @@ public class TSClientQuery {
 	 */
 	public ChannelConnectInfoAnswer channelConnectInfo(int cid) throws InsufficientClientPermissionsQueryException {
 		return sendQuery(new ChannelConnectInfoQuery(cid));
-	}
-
-	private void checkStartedClient() throws UnStartedClientException {
-		if (!isStarted())
-			throw new UnStartedClientException();
 	}
 
 	/**
@@ -1254,5 +1240,19 @@ public class TSClientQuery {
 	 */
 	public WhoAmIAnswer whoAmI() {
 		return sendQuery(new WhoAmIQuery());
+	}
+
+	private boolean auth() {
+		try {
+			sendQuery(new AuthQuery(apikey));
+		} catch (InvalidParameterQueryException e) {
+			return false;
+		}
+		return true;
+	}
+
+	private void checkStartedClient() throws UnStartedClientException {
+		if (!isStarted())
+			throw new UnStartedClientException();
 	}
 }

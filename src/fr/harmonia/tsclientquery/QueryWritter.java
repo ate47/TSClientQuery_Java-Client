@@ -8,14 +8,6 @@ import fr.harmonia.tsclientquery.query.NoAnswerQuery;
 import fr.harmonia.tsclientquery.query.Query;
 
 class QueryWritter extends Thread {
-	private TSClientQuery client;
-
-	private OutputStream stream;
-
-	public QueryWritter(TSClientQuery client, OutputStream stream) {
-		this.client = client;
-		this.stream = stream;
-	}
 	/**
 	 * stupid query to say we're still here 
 	 * @author ATE47
@@ -27,6 +19,14 @@ class QueryWritter extends Thread {
 			super("ok");
 		}
 		
+	}
+
+	private TSClientQuery client;
+
+	private OutputStream stream;
+	public QueryWritter(TSClientQuery client, OutputStream stream) {
+		this.client = client;
+		this.stream = stream;
 	}
 
 	@Override

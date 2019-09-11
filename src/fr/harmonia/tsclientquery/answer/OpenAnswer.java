@@ -46,6 +46,11 @@ public class OpenAnswer extends Answer {
 		return super.getInteger(key);
 	}
 	@Override
+	public void set(String key, Object value) {
+		super.set(key, value);
+	}
+
+	@Override
 	protected long getLong(int index, String key) {
 		return super.getLong(index, key);
 	}
@@ -53,10 +58,5 @@ public class OpenAnswer extends Answer {
 	@Override
 	protected long getLong(String key) {
 		return super.getLong(key);
-	}
-
-	@Override
-	public void set(String key, Object value) {
-		super.set(key, value);
 	}
 }

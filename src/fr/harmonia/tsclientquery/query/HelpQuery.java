@@ -7,18 +7,13 @@ public class HelpQuery extends Query<HelpAnswer> {
 
 	private String commandName;
 
-	public HelpQuery(String commandName) {
-		super("help");
-		this.commandName = commandName;
-	}
-
 	public HelpQuery() {
 		this("");
 	}
 
-	@Override
-	public String createCommand() {
-		return super.createCommand() + ' ' + commandName;
+	public HelpQuery(String commandName) {
+		super("help");
+		this.commandName = commandName;
 	}
 
 	@Override
@@ -27,5 +22,10 @@ public class HelpQuery extends Query<HelpAnswer> {
 			answer = new HelpAnswer(obj.getLine());
 		else
 			answer.addLine(obj.getLine());
+	}
+
+	@Override
+	public String createCommand() {
+		return super.createCommand() + ' ' + commandName;
 	}
 }

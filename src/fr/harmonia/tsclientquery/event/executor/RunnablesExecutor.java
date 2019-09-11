@@ -16,10 +16,10 @@ public interface RunnablesExecutor {
 	/**
 	 * stop this executor
 	 */
-	void stop();
+	void start();
 
 	/**
 	 * stop this executor
 	 */
-	void start();
+	void stop();
 }

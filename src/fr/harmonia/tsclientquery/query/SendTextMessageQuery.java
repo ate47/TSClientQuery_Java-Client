@@ -21,6 +21,16 @@ error id=0 msg=ok
 
 public class SendTextMessageQuery extends NoAnswerQuery {
 
+	public enum TargetMode {
+		CHANNEL(2), SERVER(3);
+
+		public final int id;
+
+		private TargetMode(int id) {
+			this.id = id;
+		}
+	}
+
 	public SendTextMessageQuery(int clientID, String msg) {
 		super("sendtextmessage");
 		addArgument("targetmode", 1);
@@ -32,16 +42,6 @@ public class SendTextMessageQuery extends NoAnswerQuery {
 		super("sendtextmessage");
 		addArgument("targetmode", target.id);
 		addArgument("msg", msg);
-	}
-
-	public enum TargetMode {
-		CHANNEL(2), SERVER(3);
-
-		public final int id;
-
-		private TargetMode(int id) {
-			this.id = id;
-		}
 	}
 
 }

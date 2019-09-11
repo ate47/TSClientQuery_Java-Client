@@ -19,15 +19,6 @@ public class SynchronousEventExecutor implements RunnablesExecutor {
 		runnables.add(runnable);
 	}
 
-	@Override
-	public void stop() {
-		runnables.clear();
-	}
-
-	@Override
-	public void start() {
-	}
-
 	/**
 	 * call the runnables
 	 */
@@ -35,6 +26,15 @@ public class SynchronousEventExecutor implements RunnablesExecutor {
 		Runnable r;
 		while ((r = runnables.poll()) != null)
 			r.run();
+	}
+
+	@Override
+	public void start() {
+	}
+
+	@Override
+	public void stop() {
+		runnables.clear();
 	}
 
 }

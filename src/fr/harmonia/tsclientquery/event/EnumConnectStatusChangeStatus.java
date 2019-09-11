@@ -2,22 +2,22 @@ package fr.harmonia.tsclientquery.event;
 
 public enum EnumConnectStatusChangeStatus {
 	/**
-	 * try to connect to server
-	 */
-	connecting,
-	/**
 	 * connected to server, ask default channel
 	 */
 	connected,
 	/**
-	 * ask every channel -> end with channellistfinished
+	 * try to connect to server
 	 */
-	connection_establishing,
+	connecting,
 	/**
 	 * ask every channel / server groups, client needed permissions, server data,
 	 * subscribe
 	 */
 	connection_established,
+	/**
+	 * ask every channel -> end with channellistfinished
+	 */
+	connection_establishing,
 	/**
 	 * when the client disconnect
 	 */

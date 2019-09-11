@@ -26,10 +26,6 @@ class QueryReader extends Thread {
 		this.stream = stream;
 	}
 
-	private void forEachHandlerSync(Consumer<Handler> h) {
-		client.executor.add(() -> client.HANDLERS.forEach(h));
-	}
-
 	@Override
 	public void run() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -335,5 +331,9 @@ class QueryReader extends Thread {
 			reader.close();
 		} catch (IOException e) {
 		}
+	}
+
+	private void forEachHandlerSync(Consumer<Handler> h) {
+		client.executor.add(() -> client.HANDLERS.forEach(h));
 	}
 }

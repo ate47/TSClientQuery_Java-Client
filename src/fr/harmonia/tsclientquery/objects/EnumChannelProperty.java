@@ -57,14 +57,14 @@ public enum EnumChannelProperty {
 		this.flag = flag;
 	}
 
-	public boolean isFlag() {
-		return flag;
-	}
-
 	public String getPropertyName(boolean addFlag) {
 		if (flag && addFlag)
 			return "channel_flag_" + propName;
 		else
 			return "channel_" + propName;
+	}
+
+	public boolean isFlag() {
+		return flag;
 	}
 }

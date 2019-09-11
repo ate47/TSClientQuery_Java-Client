@@ -8,11 +8,11 @@ public class ClientBanBuilder {
 
 	}
 
-	private int clid;
-	private int cldbid;
-	private String uid;
-	private long timeInSeconds = -1;
 	private String banreason;
+	private int cldbid;
+	private int clid;
+	private long timeInSeconds = -1;
+	private String uid;
 
 	public ClientBan build() {
 		if (clid < 0 && cldbid < 0 && uid == null)

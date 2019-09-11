@@ -57,6 +57,8 @@ public enum EnumEvent {
 
 	notifychannelpermlist("notifychannelpermlist"),
 
+	notifychannelsubscribed("notifychannelsubscribed"),
+
 	notifyclientchatclosed("notifyclientchatclosed"),
 
 	notifyclientchatcomposing("notifyclientchatcomposing"),
@@ -103,6 +105,8 @@ public enum EnumEvent {
 	 */
 	notifyclientnamefromuid("notifyclientnamefromuid"),
 
+	notifyclientneededpermissions("notifyclientneededpermissions"),
+
 	/**
 	 * @see Handler#onPoke(int, int, String, String, String)
 	 */
@@ -121,10 +125,6 @@ public enum EnumEvent {
 	notifycomplainlist("notifycomplainlist"),
 
 	notifyconnectioninfo("notifyconnectioninfo"),
-
-	notifyclientneededpermissions("notifyclientneededpermissions"),
-
-	notifychannelsubscribed("notifychannelsubscribed"),
 
 	notifyconnectstatuschange("notifyconnectstatuschange"),
 

@@ -9,39 +9,39 @@ package fr.harmonia.tsclientquery.objects;
 public enum SpeakIcon {
 
 	/**
-	 * DARK BLUE CIRCLE
-	 */
-	IDLE,
-	/**
 	 * DARK ORANGE CIRCLE
 	 */
 	CHANNEL_COMMANDER,
-	/**
-	 * BLUE CIRCLE
-	 */
-	SPEAKING,
 	/**
 	 * ORANGE CIRCLE
 	 */
 	CHANNEL_COMMANDER_SPEAKING,
 	/**
-	 * RED CIRCLE
+	 * DARK BLUE CIRCLE
 	 */
-	WHISPER,
-	/**
-	 * MICROPHONE WITH CROSS
-	 */
-	MICROPHONE_MUTED,
+	IDLE,
 	/**
 	 * MICROPHONE WITH BARRIER
 	 */
 	MICROPHONE_DISABLED,
 	/**
+	 * MICROPHONE WITH CROSS
+	 */
+	MICROPHONE_MUTED,
+	/**
+	 * SPEAKER WITH BARRIER
+	 */
+	SPEAKER_DISABLE,
+	/**
 	 * SPEAKER WITH CROSS
 	 */
 	SPEAKER_MUTED,
 	/**
-	 * SPEAKER WITH BARRIER
+	 * BLUE CIRCLE
 	 */
-	SPEAKER_DISABLE;
+	SPEAKING,
+	/**
+	 * RED CIRCLE
+	 */
+	WHISPER;
 }

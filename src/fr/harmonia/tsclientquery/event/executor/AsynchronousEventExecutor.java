@@ -18,13 +18,12 @@ public class AsynchronousEventExecutor implements RunnablesExecutor, Runnable {
 	}
 
 	@Override
-	public synchronized void stop() {
-		if (thread != null) {
-			thread.interrupt();
-			runnables.clear();
+	public void run() {
+		while (!thread.isInterrupted()) {
 			try {
-				thread.join();
+				runnables.take().run();
 			} catch (InterruptedException e) {
+				break;
 			}
 		}
 	}
@@ -37,12 +36,13 @@ public class AsynchronousEventExecutor implements RunnablesExecutor, Runnable {
 	}
 
 	@Override
-	public void run() {
-		while (!thread.isInterrupted()) {
+	public synchronized void stop() {
+		if (thread != null) {
+			thread.interrupt();
+			runnables.clear();
 			try {
-				runnables.take().run();
+				thread.join();
 			} catch (InterruptedException e) {
-				break;
 			}
 		}
 	}

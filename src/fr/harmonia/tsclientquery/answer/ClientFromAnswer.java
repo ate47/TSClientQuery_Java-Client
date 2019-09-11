@@ -8,15 +8,15 @@ public class ClientFromAnswer extends Answer {
 		super(obj);
 	}
 
-	public String getClientUID() {
-		return get("cluid");
-	}
-
 	public int getClientDatabaseID() {
 		return getInteger("cldbid");
 	}
 
 	public String getClientName() {
 		return get("name");
+	}
+
+	public String getClientUID() {
+		return get("cluid");
 	}
 }

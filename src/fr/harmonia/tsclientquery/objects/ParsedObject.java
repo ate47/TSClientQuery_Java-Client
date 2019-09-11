@@ -80,6 +80,110 @@ public class ParsedObject {
 	}
 
 	/**
+	 * parse the line if not already done (by asking a value) and return the data
+	 * map
+	 * 
+	 * @return the argument map
+	 * @deprecated only for internal use
+	 */
+	@Deprecated
+	public synchronized Map<String, String>[] getData() {
+		if (data == null)
+			return this.data = parseLines(line, ConcurrentHashMap::new);
+		else
+			return data;
+	}
+
+	/**
+	 * the data line receive
+	 */
+	public String getLine() {
+		return line;
+	}
+
+	/**
+	 * go to the next row combine with {@link Answer#rowNotEmpty()} to create an
+	 * iterator
+	 */
+	public void next() {
+		if (!rowNotEmpty())
+			new IllegalArgumentException("No next row");
+		++index;
+	}
+
+	/**
+	 * true while the row pointed isn't empty
+	 */
+	public boolean rowNotEmpty() {
+		return index != getData().length && !data[index].isEmpty();
+	}
+
+	/**
+	 * get the number of rows returned
+	 */
+	public int rowsCount() {
+		return getData().length;
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(getData());
+	}
+
+	/**
+	 * update those data with a new {@link ParsedObject}
+	 * 
+	 * @param object
+	 *            the new object
+	 * @param share
+	 *            if old data must be shared or merge in this object
+	 */
+	public void update(ParsedObject object, boolean share) {
+		if (!share) {
+			update(object.data);
+		} else {
+			synchronized (this) {
+				this.line = object.line;
+				data = object.data;
+			}
+		}
+	}
+
+	/**
+	 * update those data with a new line
+	 * 
+	 * @param line
+	 *            the new line
+	 * @param reset
+	 *            if old data must be delete
+	 */
+	public void update(String line, boolean reset) {
+		if (!reset) {
+			update(parseLines(line, HashMap::new));
+		} else {
+			synchronized (this) {
+				this.line = line;
+				data = null;
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void update(Map<String, String>[] newData) {
+		Map<String, String>[] oldData = getData();
+		if (newData.length > oldData.length)
+			synchronized (this) {
+				data = new Map[newData.length];
+				System.arraycopy(oldData, 0, data, 0, oldData.length);
+				for (int i = oldData.length; i < data.length; i++)
+					data[i] = newData[i];
+			}
+		for (int i = 0; i < oldData.length && i < newData.length; i++)
+			newData[i].forEach(data[i]::put);
+
+	}
+
+	/**
 	 * get a key value
 	 * 
 	 * @param index
@@ -128,21 +232,6 @@ public class ParsedObject {
 	}
 
 	/**
-	 * parse the line if not already done (by asking a value) and return the data
-	 * map
-	 * 
-	 * @return the argument map
-	 * @deprecated only for internal use
-	 */
-	@Deprecated
-	public synchronized Map<String, String>[] getData() {
-		if (data == null)
-			return this.data = parseLines(line, ConcurrentHashMap::new);
-		else
-			return data;
-	}
-
-	/**
 	 * get a key value as a integer
 	 * 
 	 * @param index
@@ -165,13 +254,6 @@ public class ParsedObject {
 	 */
 	protected int getInteger(String key) {
 		return getInteger(index, key);
-	}
-
-	/**
-	 * the data line receive
-	 */
-	public String getLine() {
-		return line;
 	}
 
 	/**
@@ -198,91 +280,9 @@ public class ParsedObject {
 	protected long getLong(String key) {
 		return getLong(index, key);
 	}
-
+	
 	protected void set(String key, Object value) {
 		getData()[index].put(key, String.valueOf(value));
-	}
-
-	/**
-	 * go to the next row combine with {@link Answer#rowNotEmpty()} to create an
-	 * iterator
-	 */
-	public void next() {
-		if (!rowNotEmpty())
-			new IllegalArgumentException("No next row");
-		++index;
-	}
-
-	/**
-	 * true while the row pointed isn't empty
-	 */
-	public boolean rowNotEmpty() {
-		return index != getData().length && !data[index].isEmpty();
-	}
-
-	/**
-	 * get the number of rows returned
-	 */
-	public int rowsCount() {
-		return getData().length;
-	}
-
-	@SuppressWarnings("unchecked")
-	private void update(Map<String, String>[] newData) {
-		Map<String, String>[] oldData = getData();
-		if (newData.length > oldData.length)
-			synchronized (this) {
-				data = new Map[newData.length];
-				System.arraycopy(oldData, 0, data, 0, oldData.length);
-				for (int i = oldData.length; i < data.length; i++)
-					data[i] = newData[i];
-			}
-		for (int i = 0; i < oldData.length && i < newData.length; i++)
-			newData[i].forEach(data[i]::put);
-
-	}
-
-	/**
-	 * update those data with a new {@link ParsedObject}
-	 * 
-	 * @param object
-	 *            the new object
-	 * @param share
-	 *            if old data must be shared or merge in this object
-	 */
-	public void update(ParsedObject object, boolean share) {
-		if (!share) {
-			update(object.data);
-		} else {
-			synchronized (this) {
-				this.line = object.line;
-				data = object.data;
-			}
-		}
-	}
-
-	/**
-	 * update those data with a new line
-	 * 
-	 * @param line
-	 *            the new line
-	 * @param reset
-	 *            if old data must be delete
-	 */
-	public void update(String line, boolean reset) {
-		if (!reset) {
-			update(parseLines(line, HashMap::new));
-		} else {
-			synchronized (this) {
-				this.line = line;
-				data = null;
-			}
-		}
-	}
-	
-	@Override
-	public String toString() {
-		return Arrays.toString(getData());
 	}
 
 }

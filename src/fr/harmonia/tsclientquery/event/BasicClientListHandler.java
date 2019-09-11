@@ -107,9 +107,9 @@ public class BasicClientListHandler implements Handler {
 	}
 
 	private class ServerConnectionHandlerData {
-		ConcurrentMap<Integer, Client> CLID_TO_CLIENT;
-
 		int cid, clid;
+
+		ConcurrentMap<Integer, Client> CLID_TO_CLIENT;
 
 		public ServerConnectionHandlerData(ConcurrentMap<Integer, Client> clientMap) {
 			CLID_TO_CLIENT = clientMap;
@@ -123,25 +123,17 @@ public class BasicClientListHandler implements Handler {
 	}
 
 	private TSClientQuery client;
-	private final ClientListCollection viewClients = new ClientListCollection();
 	// best name ever
 	private final ConcurrentMap<Integer, ServerConnectionHandlerData> SCHANDLERID_TO_SERVERDATA = new ConcurrentHashMap<>();
+	private final ClientListCollection viewClients = new ClientListCollection();
 
 	public BasicClientListHandler(TSClientQuery client) {
 		this.client = client;
 	}
 
-	private void addClient(int schandlerid, ChannelClient client) {
-		mergeClientOrCreate(schandlerid, client);
-	}
-
 	public ServerConnectionHandlerData createOrGetServerConnectionHandlerData(int schandlerid) {
 		return SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
 				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>()));
-	}
-
-	private void deleteClient(int schandlerid, int clientID) {
-		moveClient(schandlerid, 0, clientID);
 	}
 
 	public Client getClient(int schandlerid, int clid) {
@@ -194,44 +186,6 @@ public class BasicClientListHandler implements Handler {
 		queryClients(schandlerid);
 
 		viewClients.data = createOrGetServerConnectionHandlerData(schandlerid);
-	}
-
-	private void mergeClientOrCreate(int schandlerid, ChannelClient client) {
-		ConcurrentMap<Integer, Client> clidMap = SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
-				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>())).CLID_TO_CLIENT;
-		int clid = client.getClientID();
-		MutableClient old = (MutableClient) clidMap.get(clid);
-		if (old == null) {
-			clidMap.put(clid, new MutableClient(client));
-		} else {
-			old.update(client, false);
-		}
-	}
-
-	private ServerConnectionHandlerData mergeClientOrCreate(int schandlerid, List<ChannelClient> clients) {
-		ServerConnectionHandlerData data = SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
-				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>()));
-		ConcurrentMap<Integer, Client> clidMap = data.CLID_TO_CLIENT;
-		for (ChannelClient client : clients) {
-			int clid = client.getClientID();
-			MutableClient old = (MutableClient) clidMap.get(clid);
-			if (old == null) {
-				clidMap.put(clid, new MutableClient(client));
-			} else {
-				old.update(client, false);
-			}
-		}
-		return data;
-	}
-
-	private void moveClient(int schandlerid, int channelToID, int clientID) {
-		ServerConnectionHandlerData data = createOrGetServerConnectionHandlerData(schandlerid);
-		data.doForClient(clientID, c -> c.changeChannel(channelToID));
-		if (data.clid == clientID) {
-			data.cid = channelToID;
-			mergeClientOrCreate(schandlerid,
-					client.channelClientList(channelToID, false, false, true, false, false, false));
-		}
 	}
 
 	@Override
@@ -312,6 +266,52 @@ public class BasicClientListHandler implements Handler {
 		data.cid = 0;
 		data.clid = 0;
 		data.CLID_TO_CLIENT.clear();
+	}
+
+	private void addClient(int schandlerid, ChannelClient client) {
+		mergeClientOrCreate(schandlerid, client);
+	}
+
+	private void deleteClient(int schandlerid, int clientID) {
+		moveClient(schandlerid, 0, clientID);
+	}
+
+	private void mergeClientOrCreate(int schandlerid, ChannelClient client) {
+		ConcurrentMap<Integer, Client> clidMap = SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
+				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>())).CLID_TO_CLIENT;
+		int clid = client.getClientID();
+		MutableClient old = (MutableClient) clidMap.get(clid);
+		if (old == null) {
+			clidMap.put(clid, new MutableClient(client));
+		} else {
+			old.update(client, false);
+		}
+	}
+
+	private ServerConnectionHandlerData mergeClientOrCreate(int schandlerid, List<ChannelClient> clients) {
+		ServerConnectionHandlerData data = SCHANDLERID_TO_SERVERDATA.computeIfAbsent(schandlerid,
+				id -> new ServerConnectionHandlerData(new ConcurrentHashMap<Integer, Client>()));
+		ConcurrentMap<Integer, Client> clidMap = data.CLID_TO_CLIENT;
+		for (ChannelClient client : clients) {
+			int clid = client.getClientID();
+			MutableClient old = (MutableClient) clidMap.get(clid);
+			if (old == null) {
+				clidMap.put(clid, new MutableClient(client));
+			} else {
+				old.update(client, false);
+			}
+		}
+		return data;
+	}
+
+	private void moveClient(int schandlerid, int channelToID, int clientID) {
+		ServerConnectionHandlerData data = createOrGetServerConnectionHandlerData(schandlerid);
+		data.doForClient(clientID, c -> c.changeChannel(channelToID));
+		if (data.clid == clientID) {
+			data.cid = channelToID;
+			mergeClientOrCreate(schandlerid,
+					client.channelClientList(channelToID, false, false, true, false, false, false));
+		}
 	}
 
 	private void queryClients(int schandlerid) {

@@ -18,13 +18,13 @@ public class MultipleBanAnswer extends Answer implements Iterable<BanAnswer> {
 		list.add(new BanAnswer(obj));
 	}
 
+	public List<BanAnswer> getBanList() {
+		return list;
+	}
+	
 	@Override
 	public Iterator<BanAnswer> iterator() {
 		return list.iterator();
-	}
-	
-	public List<BanAnswer> getBanList() {
-		return list;
 	}
 
 }
