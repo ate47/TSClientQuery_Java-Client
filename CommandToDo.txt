@@ -1,6 +1,5 @@
    quit                        | close connection
 
-   channelgroupadd             | create a channel group
    channelgroupaddperm         | add a permission to a channel group
    channelgroupclientlist      | list all assigned channel groups for the specified channel id
    channelgroupdel             | delete a channel group

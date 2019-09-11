@@ -50,6 +50,7 @@ import fr.harmonia.tsclientquery.objects.ChannelClient;
 import fr.harmonia.tsclientquery.objects.ChannelProperty;
 import fr.harmonia.tsclientquery.objects.ClientBan;
 import fr.harmonia.tsclientquery.objects.DataBaseBan;
+import fr.harmonia.tsclientquery.objects.EnumChannelGroupType;
 import fr.harmonia.tsclientquery.objects.Permission;
 import fr.harmonia.tsclientquery.objects.ServerConnection;
 import fr.harmonia.tsclientquery.objects.Token;
@@ -68,6 +69,7 @@ import fr.harmonia.tsclientquery.query.ChannelConnectInfoQuery;
 import fr.harmonia.tsclientquery.query.ChannelCreateQuery;
 import fr.harmonia.tsclientquery.query.ChannelDeleteQuery;
 import fr.harmonia.tsclientquery.query.ChannelEditQuery;
+import fr.harmonia.tsclientquery.query.ChannelGroupAddQuery;
 import fr.harmonia.tsclientquery.query.ClientFromDatabaseIDQuery;
 import fr.harmonia.tsclientquery.query.ClientFromIDQuery;
 import fr.harmonia.tsclientquery.query.ClientFromUIDQuery;
@@ -116,8 +118,7 @@ public class TSClientQuery {
 	/**
 	 * decode with base64
 	 * 
-	 * @param s
-	 *            what to decode
+	 * @param s what to decode
 	 * @return the decoded string
 	 */
 	public static String decodeBase64(String s) {
@@ -127,8 +128,7 @@ public class TSClientQuery {
 	/**
 	 * decode a string query
 	 * 
-	 * @param str
-	 *            string to decode
+	 * @param str string to decode
 	 * @return the decoded string
 	 */
 	public static String decodeQueryStringParameter(String str) {
@@ -141,8 +141,7 @@ public class TSClientQuery {
 	/**
 	 * encode with base64
 	 * 
-	 * @param s
-	 *            what to encode
+	 * @param s what to encode
 	 * @return the encoded string
 	 */
 	public static String encodeBase64(String s) {
@@ -152,8 +151,7 @@ public class TSClientQuery {
 	/**
 	 * encode a string query
 	 * 
-	 * @param str
-	 *            string to encode
+	 * @param str string to encode
 	 * @return the encoded string
 	 */
 	public static String encodeQueryStringParameter(String str) {
@@ -199,8 +197,7 @@ public class TSClientQuery {
 	/**
 	 * create a clientquery to default localhost:25639
 	 * 
-	 * @param apikey
-	 *            client APIKEY
+	 * @param apikey client APIKEY
 	 * @see TSClientQuery#TSClientQuery(String, InetAddress, int)
 	 */
 	public TSClientQuery(String apikey) {
@@ -210,12 +207,9 @@ public class TSClientQuery {
 	/**
 	 * create a clientquery to a non-default address
 	 * 
-	 * @param apikey
-	 *            client APIKEY
-	 * @param address
-	 *            clientquery server address
-	 * @param port
-	 *            clientquery server port
+	 * @param apikey  client APIKEY
+	 * @param address clientquery server address
+	 * @param port    clientquery server port
 	 * @see TSClientQuery#TSClientQuery(String)
 	 */
 	public TSClientQuery(String apikey, InetAddress address, int port) {
@@ -227,11 +221,11 @@ public class TSClientQuery {
 	/**
 	 * send a {@link BanAddQuery} and get the ban ID
 	 * 
-	 * @param query
-	 *            the query to send
+	 * @param query the query to send
 	 * @return the new ban id
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 * @see BanAddQueryBuilder
 	 */
 	public int banAdd(Ban ban) throws InsufficientClientPermissionsQueryException {
@@ -241,11 +235,9 @@ public class TSClientQuery {
 	/**
 	 * send a {@link BanClientQuery} and get the ban IDs
 	 * 
-	 * @param query
-	 *            the query to send
+	 * @param query the query to send
 	 * @return the ban IDs of the new bans
-	 * @throws QueryException
-	 *             if an error occur
+	 * @throws QueryException if an error occur
 	 * @see BanClientQueryBuilder
 	 */
 	public int[] banClient(ClientBan ban) throws InsufficientClientPermissionsQueryException {
@@ -258,10 +250,12 @@ public class TSClientQuery {
 	 * be register
 	 * 
 	 * @return the list of ban
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
-	 * @throws UnRegisterQueryException
-	 *             if the {@link EnumEvent#notifybanlist} event isn't register
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws UnRegisterQueryException                    if the
+	 *                                                     {@link EnumEvent#notifybanlist}
+	 *                                                     event isn't register
 	 */
 	public List<DataBaseBan> banList() throws InsufficientClientPermissionsQueryException, UnRegisterQueryException {
 		return sendQuery(new BanListQuery()).getBanList();
@@ -271,11 +265,11 @@ public class TSClientQuery {
 	 * send a {@link ChannelAddPermQuery} to a channel (usable to add multiple
 	 * permission in one query)
 	 * 
-	 * @param query
-	 *            the query to send
+	 * @param query the query to send
 	 * @return if the permission(s) is(were) added
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public boolean channelAddPerm(ChannelAddPermQuery query) throws InsufficientClientPermissionsQueryException {
 		return sendQuery(query).getId() == QueryException.ERROR_ID_OK;
@@ -285,15 +279,13 @@ public class TSClientQuery {
 	 * add a permission to a channel, to add multiple permissions in one query use
 	 * {@link TSClientQuery#channelAddPerm(ChannelAddPermQuery)}
 	 * 
-	 * @param channelId
-	 *            the channel id
-	 * @param permid
-	 *            the perm id
-	 * @param permvalue
-	 *            the perm value
+	 * @param channelId the channel id
+	 * @param permid    the perm id
+	 * @param permvalue the perm value
 	 * @return if the permission is added
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public boolean channelAddPerm(int channelId, int permid, int permvalue)
 			throws InsufficientClientPermissionsQueryException {
@@ -304,15 +296,13 @@ public class TSClientQuery {
 	 * add a permission to a channel, to add multiple permissions in one query use
 	 * {@link TSClientQuery#channelAddPerm(ChannelAddPermQuery)}
 	 * 
-	 * @param channelId
-	 *            the channel id
-	 * @param permid
-	 *            the perm name
-	 * @param permvalue
-	 *            the perm value
+	 * @param channelId the channel id
+	 * @param permid    the perm name
+	 * @param permvalue the perm value
 	 * @return if the permission is added
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public boolean channelAddPerm(int channelId, String permName, int permvalue)
 			throws InsufficientClientPermissionsQueryException {
@@ -323,11 +313,11 @@ public class TSClientQuery {
 	 * send a {@link ChannelClientAddPermQuery} to a channel (usable to add multiple
 	 * permission in one query)
 	 * 
-	 * @param query
-	 *            the query to change
+	 * @param query the query to change
 	 * @return if the permission is added
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public boolean channelClientAddPerm(ChannelClientAddPermQuery query)
 			throws InsufficientClientPermissionsQueryException {
@@ -338,17 +328,14 @@ public class TSClientQuery {
 	 * add a permission to a channel,to add multiple permissions in one query use
 	 * {@link TSClientQuery#channelClientAddPerm(ChannelClientAddPermQuery)}
 	 * 
-	 * @param channelId
-	 *            the channel id
-	 * @param cldbid
-	 *            the client database id
-	 * @param permid
-	 *            the perm id
-	 * @param permvalue
-	 *            the perm value
+	 * @param channelId the channel id
+	 * @param cldbid    the client database id
+	 * @param permid    the perm id
+	 * @param permvalue the perm value
 	 * @return if the permission is added
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public boolean channelClientAddPerm(int channelId, int cldbid, int permid, int permvalue)
 			throws InsufficientClientPermissionsQueryException {
@@ -359,17 +346,14 @@ public class TSClientQuery {
 	 * add a permission to a channel,to add multiple permissions in one query use
 	 * {@link TSClientQuery#channelClientAddPerm(ChannelClientAddPermQuery)}
 	 * 
-	 * @param channelId
-	 *            the channel id
-	 * @param cldbid
-	 *            the client database id
-	 * @param permid
-	 *            the perm name
-	 * @param permvalue
-	 *            the perm value
+	 * @param channelId the channel id
+	 * @param cldbid    the client database id
+	 * @param permid    the perm name
+	 * @param permvalue the perm value
 	 * @return if the permission is added
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public boolean channelClientAddPerm(int channelId, int cldbid, String permName, int permvalue)
 			throws InsufficientClientPermissionsQueryException {
@@ -379,8 +363,7 @@ public class TSClientQuery {
 	/**
 	 * get the client list of a channel (or empty if unsubscribable)
 	 * 
-	 * @param cid
-	 *            the channel ID
+	 * @param cid the channel ID
 	 * @return the list of {@link ChannelClient}
 	 */
 	public List<ChannelClient> channelClientList(int cid) {
@@ -390,20 +373,13 @@ public class TSClientQuery {
 	/**
 	 * get the client list of a channel (or empty if unsubscribable)
 	 * 
-	 * @param cid
-	 *            the channel ID
-	 * @param uid
-	 *            get client UID?
-	 * @param away
-	 *            get client away?
-	 * @param voice
-	 *            get client voice state?
-	 * @param groups
-	 *            get client groups?
-	 * @param icon
-	 *            get client icon?
-	 * @param country
-	 *            get client country?
+	 * @param cid     the channel ID
+	 * @param uid     get client UID?
+	 * @param away    get client away?
+	 * @param voice   get client voice state?
+	 * @param groups  get client groups?
+	 * @param icon    get client icon?
+	 * @param country get client country?
 	 * @return the list of {@link ChannelClient}
 	 */
 	public List<ChannelClient> channelClientList(int cid, boolean uid, boolean away, boolean voice, boolean groups,
@@ -417,11 +393,12 @@ public class TSClientQuery {
 	 * {@link EnumEvent#notifychannelclientpermlist} event must be registered
 	 * 
 	 * @return the list of permission
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
-	 * @throws UnRegisterQueryException
-	 *             if the {@link EnumEvent#notifychannelclientpermlist} event isn't
-	 *             registered
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws UnRegisterQueryException                    if the
+	 *                                                     {@link EnumEvent#notifychannelclientpermlist}
+	 *                                                     event isn't registered
 	 * 
 	 */
 	public List<Permission> channelClientPermList(int cid, int cldbid)
@@ -433,8 +410,9 @@ public class TSClientQuery {
 	 * 
 	 * get the current channel connection info
 	 * 
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public ChannelConnectInfoAnswer channelConnectInfo() throws InsufficientClientPermissionsQueryException {
 		return sendQuery(new ChannelConnectInfoQuery());
@@ -443,21 +421,48 @@ public class TSClientQuery {
 	/**
 	 * get the channel connection info
 	 * 
-	 * @param cid
-	 *            channel ID
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param cid channel ID
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public ChannelConnectInfoAnswer channelConnectInfo(int cid) throws InsufficientClientPermissionsQueryException {
 		return sendQuery(new ChannelConnectInfoQuery(cid));
 	}
 
 	/**
+	 * create a channel group
+	 * 
+	 * @param name the group name
+	 * @return if the group is added
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 */
+	public boolean channelGroupAdd(String name) throws InsufficientClientPermissionsQueryException {
+		return sendQuery(new ChannelGroupAddQuery(name)).getId() == QueryException.ERROR_ID_OK;
+	}
+
+	/**
+	 * create a channel group
+	 * 
+	 * @param name the group name
+	 * @param the  group type
+	 * @return if the group is added
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 */
+	public boolean channelGroupAdd(String name, EnumChannelGroupType type)
+			throws InsufficientClientPermissionsQueryException {
+		return sendQuery(new ChannelGroupAddQuery(name, type)).getId() == QueryException.ERROR_ID_OK;
+	}
+
+	/**
 	 * request client data with his database id, require
 	 * {@link EnumEvent#notifyclientnamefromdbid}
 	 * 
-	 * @param dbid
-	 *            the client database id
+	 * @param dbid the client database id
 	 * @return client data
 	 */
 	public ClientFromAnswer clientInfoFromDatabaseID(int dbid) {
@@ -468,8 +473,7 @@ public class TSClientQuery {
 	 * request client data with his unique id, require
 	 * {@link EnumEvent#notifyclientnamefromuid}
 	 * 
-	 * @param uid
-	 *            the client unique id
+	 * @param uid the client unique id
 	 * @return client data
 	 */
 	public ClientFromAnswer clientInfoFromDatabaseUID(String uid) {
@@ -480,8 +484,7 @@ public class TSClientQuery {
 	 * request client data with his id, require
 	 * {@link EnumEvent#notifyclientuidfromclid}
 	 * 
-	 * @param id
-	 *            the client id
+	 * @param id the client id
 	 * @return client data
 	 */
 	public ClientFromAnswer clientInfoFromID(int id) {
@@ -500,18 +503,12 @@ public class TSClientQuery {
 	/**
 	 * get the client list of a server (without unsubscribable channels)
 	 * 
-	 * @param uid
-	 *            get client UID?
-	 * @param away
-	 *            get client away?
-	 * @param voice
-	 *            get client voice state?
-	 * @param groups
-	 *            get client groups?
-	 * @param icon
-	 *            get client icon?
-	 * @param country
-	 *            get client country?
+	 * @param uid     get client UID?
+	 * @param away    get client away?
+	 * @param voice   get client voice state?
+	 * @param groups  get client groups?
+	 * @param icon    get client icon?
+	 * @param country get client country?
 	 * @return the list of {@link ChannelClient}
 	 */
 	public List<ChannelClient> clientList(boolean uid, boolean away, boolean voice, boolean groups, boolean icon,
@@ -522,12 +519,11 @@ public class TSClientQuery {
 	/**
 	 * move clients to a channel
 	 * 
-	 * @param cid
-	 *            the channel id
-	 * @param clids
-	 *            the client IDs to move
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param cid   the channel id
+	 * @param clids the client IDs to move
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 * @see TSClientQuery#clientMove(int, String, int...)
 	 */
 	public void clientMove(int cid, int... clids) throws InsufficientClientPermissionsQueryException {
@@ -537,14 +533,12 @@ public class TSClientQuery {
 	/**
 	 * move clients to a channel
 	 * 
-	 * @param cid
-	 *            the channel id
-	 * @param password
-	 *            the password of this channel
-	 * @param clids
-	 *            the client IDs to move
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param cid      the channel id
+	 * @param password the password of this channel
+	 * @param clids    the client IDs to move
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 * @see TSClientQuery#clientMove(int, int...)
 	 */
 	public void clientMove(int cid, String password, int... clids) throws InsufficientClientPermissionsQueryException {
@@ -554,8 +548,7 @@ public class TSClientQuery {
 	/**
 	 * register an event to a all schandlerid
 	 * 
-	 * @param event
-	 *            the event to register
+	 * @param event the event to register
 	 */
 	public void clientNotifyRegister(EnumEvent event) {
 		clientNotifyRegister(0, event);
@@ -564,10 +557,8 @@ public class TSClientQuery {
 	/**
 	 * register an event to a certain schandlerid
 	 * 
-	 * @param schandlerid
-	 *            the schandlerid (0 for any)
-	 * @param event
-	 *            the event to register
+	 * @param schandlerid the schandlerid (0 for any)
+	 * @param event       the event to register
 	 */
 	public void clientNotifyRegister(int schandlerid, EnumEvent event) {
 		sendQuery(new QueryClientNotifyRegister(schandlerid, event));
@@ -583,8 +574,7 @@ public class TSClientQuery {
 	/**
 	 * register all events to a certain schandlerid
 	 * 
-	 * @param schandlerid
-	 *            the schandlerid (0 for any)
+	 * @param schandlerid the schandlerid (0 for any)
 	 */
 	public void clientNotifyRegisterAll(int schandlerid) {
 		clientNotifyRegister(schandlerid, EnumEvent.any);
@@ -600,8 +590,7 @@ public class TSClientQuery {
 	/**
 	 * unregister an event to a all schandlerid
 	 * 
-	 * @param event
-	 *            the event to unregister
+	 * @param event the event to unregister
 	 */
 	public void clientNotifyUnregisterAll(EnumEvent event) {
 		clientNotifyRegister(0, event);
@@ -610,8 +599,7 @@ public class TSClientQuery {
 	/**
 	 * unregister all events to a certain schandlerid
 	 * 
-	 * @param schandlerid
-	 *            the schandlerid (0 for any)
+	 * @param schandlerid the schandlerid (0 for any)
 	 */
 	public void clientNotifyUnregisterAll(int schandlerid) {
 		clientNotifyUnregisterAll(schandlerid, EnumEvent.any);
@@ -620,10 +608,8 @@ public class TSClientQuery {
 	/**
 	 * unregister an event to a certain schandlerid
 	 * 
-	 * @param schandlerid
-	 *            the schandlerid (0 for any)
-	 * @param event
-	 *            the event to unregister
+	 * @param schandlerid the schandlerid (0 for any)
+	 * @param event       the event to unregister
 	 */
 	public void clientNotifyUnregisterAll(int schandlerid, EnumEvent event) {
 		sendQuery(new QueryClientNotifyUnregister(schandlerid, event));
@@ -632,12 +618,11 @@ public class TSClientQuery {
 	/**
 	 * try to connect to a server
 	 * 
-	 * @param serverConnection
-	 *            the server to connect, see {@link ServerConnectionBuilder} to
-	 *            build
-	 * @throws CurrentlyNotPossibleQueryException
-	 *             if the selected server connection handler is already use for a
-	 *             server
+	 * @param serverConnection the server to connect, see
+	 *                         {@link ServerConnectionBuilder} to build
+	 * @throws CurrentlyNotPossibleQueryException if the selected server connection
+	 *                                            handler is already use for a
+	 *                                            server
 	 */
 	public void connect(ServerConnection server) throws CurrentlyNotPossibleQueryException {
 		sendQuery(new ConnectQuery(server));
@@ -646,12 +631,11 @@ public class TSClientQuery {
 	/**
 	 * create a channel
 	 * 
-	 * @param name
-	 *            the channel name
-	 * @param properties
-	 *            the channel properties
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param name       the channel name
+	 * @param properties the channel properties
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public void createChannel(String name, ChannelProperty... properties)
 			throws InsufficientClientPermissionsQueryException {
@@ -669,8 +653,9 @@ public class TSClientQuery {
 	/**
 	 * delete all bans from this server
 	 * 
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public void deleteAllBans() throws InsufficientClientPermissionsQueryException {
 		sendQuery(new BanDelAllQuery());
@@ -679,11 +664,11 @@ public class TSClientQuery {
 	/**
 	 * delete a ban
 	 * 
-	 * @param banid
-	 *            the ban ID
+	 * @param banid the ban ID
 	 * @return if the ban existed and has been deleted
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public boolean deleteBan(int banid) throws InsufficientClientPermissionsQueryException {
 		return sendQuery(new BanDel(banid)).getId() == QueryException.ERROR_ID_OK;
@@ -692,12 +677,11 @@ public class TSClientQuery {
 	/**
 	 * delete a channel from the server
 	 * 
-	 * @param cid
-	 *            the channel id
-	 * @param force
-	 *            delete even if there are clients within
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param cid   the channel id
+	 * @param force delete even if there are clients within
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public void deleteChannel(int cid, boolean force) throws InsufficientClientPermissionsQueryException {
 		sendQuery(new ChannelDeleteQuery(cid, force));
@@ -713,8 +697,7 @@ public class TSClientQuery {
 	/**
 	 * disconnect from the current server connection
 	 * 
-	 * @param message
-	 *            the message to show
+	 * @param message the message to show
 	 */
 	public void disconnect(String message) {
 		sendQuery(new DisconnectQuery(message));
@@ -723,12 +706,11 @@ public class TSClientQuery {
 	/**
 	 * edit a channel
 	 * 
-	 * @param cid
-	 *            the channel ID
-	 * @param properties
-	 *            the channel properties
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param cid        the channel ID
+	 * @param properties the channel properties
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public void editChannel(int cid, ChannelProperty... properties) throws InsufficientClientPermissionsQueryException {
 		sendQuery(new ChannelEditQuery(cid, properties));
@@ -746,11 +728,9 @@ public class TSClientQuery {
 	/**
 	 * get the help file for a ClientQuery command
 	 * 
-	 * @param command
-	 *            the command to search
+	 * @param command the command to search
 	 * @return the lines of the file
-	 * @throws InvalidParameterQueryException
-	 *             is the command is unknown
+	 * @throws InvalidParameterQueryException is the command is unknown
 	 */
 	public List<String> help(String command) throws InvalidParameterQueryException {
 		return sendQuery(new HelpQuery(command)).getLines();
@@ -766,10 +746,10 @@ public class TSClientQuery {
 	/**
 	 * kick clients from the channel
 	 * 
-	 * @param clids
-	 *            cliend IDs of the client to kick
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param clids cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public void kickFromChannel(int... clids) throws InsufficientClientPermissionsQueryException {
 		sendQuery(new ClientKickQuery(Reason.CHANNEL, clids));
@@ -778,14 +758,13 @@ public class TSClientQuery {
 	/**
 	 * kick clients from the channel with a reason
 	 * 
-	 * @param reason
-	 *            the reason of this
-	 * @param clids
-	 *            cliend IDs of the client to kick
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
-	 * @throws MessageTooLongException
-	 *             if the size of the reason is too long
+	 * @param reason the reason of this
+	 * @param clids  cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws MessageTooLongException                     if the size of the reason
+	 *                                                     is too long
 	 * @see TSClientQuery#MAX_KICK_MESSAGE_LENGTH
 	 */
 	public void kickFromChannel(String reason, int... clids)
@@ -798,10 +777,10 @@ public class TSClientQuery {
 	/**
 	 * kick clients from the server
 	 * 
-	 * @param clids
-	 *            cliend IDs of the client to kick
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
+	 * @param clids cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
 	 */
 	public void kickFromServer(int... clids) throws InsufficientClientPermissionsQueryException {
 		sendQuery(new ClientKickQuery(Reason.SERVER, clids));
@@ -810,14 +789,13 @@ public class TSClientQuery {
 	/**
 	 * kick clients from the server with a reason
 	 * 
-	 * @param reason
-	 *            the reason of this
-	 * @param clids
-	 *            cliend IDs of the client to kick
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
-	 * @throws MessageTooLongException
-	 *             if the size of the reason is too long
+	 * @param reason the reason of this
+	 * @param clids  cliend IDs of the client to kick
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws MessageTooLongException                     if the size of the reason
+	 *                                                     is too long
 	 * @see TSClientQuery#MAX_KICK_MESSAGE_LENGTH
 	 */
 	public void kickFromServer(String reason, int... clids)
@@ -830,8 +808,7 @@ public class TSClientQuery {
 	/**
 	 * register an handler
 	 * 
-	 * @param handler
-	 *            the handler
+	 * @param handler the handler
 	 */
 	public synchronized void registerHandler(Handler handler) {
 		HANDLERS.add(handler);
@@ -841,14 +818,12 @@ public class TSClientQuery {
 	 * 
 	 * send a poke to another client
 	 * 
-	 * @param clientid
-	 *            the client id to sent the poke
-	 * @param message
-	 *            the poke text message
-	 * @throws MessageTooLongException
-	 *             if the size of the message is too long
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
+	 * @param clientid the client id to sent the poke
+	 * @param message  the poke text message
+	 * @throws MessageTooLongException                     if the size of the
+	 *                                                     message is too long
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
 	 * @see TSClientQuery#MAX_POKE_LENGTH
 	 */
 	public void sendPoke(int clientid, String message)
@@ -861,23 +836,22 @@ public class TSClientQuery {
 	/**
 	 * send a query
 	 * 
-	 * @param <T>
-	 *            query answer type
-	 * @param query
-	 *            the query to send
+	 * @param <T>   query answer type
+	 * @param query the query to send
 	 * @return the answer to this query
-	 * @throws CommandNotFoundException
-	 *             if the query command isn't a valid one
-	 * @throws NotConnectedQueryException
-	 *             if not connected to a server connection
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client haven't the permission to do this command
-	 * @throws UnRegisterQueryException
-	 *             if this query require to register a notify event
-	 * @throws InvalidParameterQueryException
-	 *             if the parameter aren't valid
-	 * @throws CurrentlyNotPossibleQueryException
-	 *             if the action is not possible at that time
+	 * @throws CommandNotFoundException                    if the query command
+	 *                                                     isn't a valid one
+	 * @throws NotConnectedQueryException                  if not connected to a
+	 *                                                     server connection
+	 * @throws InsufficientClientPermissionsQueryException if the client haven't the
+	 *                                                     permission to do this
+	 *                                                     command
+	 * @throws UnRegisterQueryException                    if this query require to
+	 *                                                     register a notify event
+	 * @throws InvalidParameterQueryException              if the parameter aren't
+	 *                                                     valid
+	 * @throws CurrentlyNotPossibleQueryException          if the action is not
+	 *                                                     possible at that time
 	 */
 	public synchronized <T extends Answer> T sendQuery(Query<T> query)
 			throws CommandNotFoundException, InsufficientClientPermissionsQueryException, UnRegisterQueryException,
@@ -919,12 +893,11 @@ public class TSClientQuery {
 	/**
 	 * send a message to the current channel chat
 	 * 
-	 * @param message
-	 *            the text message
-	 * @throws MessageTooLongException
-	 *             if the size of the message is too long
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
+	 * @param message the text message
+	 * @throws MessageTooLongException                     if the size of the
+	 *                                                     message is too long
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
 	 * @see TSClientQuery#MAX_MESSAGE_LENGTH
 	 */
 	public void sendTextMessageToChannel(String message)
@@ -937,14 +910,12 @@ public class TSClientQuery {
 	/**
 	 * send a message to another client
 	 * 
-	 * @param clientid
-	 *            the client id to sent the message
-	 * @param message
-	 *            the text message
-	 * @throws MessageTooLongException
-	 *             if the size of the message is too long
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
+	 * @param clientid the client id to sent the message
+	 * @param message  the text message
+	 * @throws MessageTooLongException                     if the size of the
+	 *                                                     message is too long
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
 	 * @see TSClientQuery#MAX_MESSAGE_LENGTH
 	 */
 	public void sendTextMessageToClient(int clientid, String message)
@@ -957,12 +928,11 @@ public class TSClientQuery {
 	/**
 	 * send a message to the current server chat
 	 * 
-	 * @param message
-	 *            the text message
-	 * @throws MessageTooLongException
-	 *             if the size of the message is too long
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
+	 * @param message the text message
+	 * @throws MessageTooLongException                     if the size of the
+	 *                                                     message is too long
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
 	 * @see TSClientQuery#MAX_MESSAGE_LENGTH
 	 */
 	public void sendTextMessageToServer(String message)
@@ -976,10 +946,8 @@ public class TSClientQuery {
 	 * set the {@link RunnablesExecutor} to execute notify event, default
 	 * implementation is {@link AsynchronousEventExecutor}
 	 * 
-	 * @param runnablesExecutor
-	 *            the runnables executor
-	 * @throws NullPointerException
-	 *             if runnablesExecutor is null
+	 * @param runnablesExecutor the runnables executor
+	 * @throws NullPointerException if runnablesExecutor is null
 	 * @see AsynchronousEventExecutor
 	 * @see SynchronousEventExecutor
 	 */
@@ -994,8 +962,7 @@ public class TSClientQuery {
 	/**
 	 * Set the flood rate between every queries, default value is 250
 	 * 
-	 * @param floodRate
-	 *            the flood rate in millis
+	 * @param floodRate the flood rate in millis
 	 */
 	public void setFloodRate(long floodRate) {
 		if (floodRate < 0)
@@ -1008,10 +975,8 @@ public class TSClientQuery {
 	/**
 	 * start the client
 	 * 
-	 * @throws IOException
-	 *             if the client can't create a valid socket
-	 * @throws WrongAuthKeyException
-	 *             if the apikey is wrong
+	 * @throws IOException           if the client can't create a valid socket
+	 * @throws WrongAuthKeyException if the apikey is wrong
 	 */
 	public synchronized void start() throws IOException, WrongAuthKeyException {
 		if (started)
@@ -1041,10 +1006,8 @@ public class TSClientQuery {
 	/**
 	 * stop the client
 	 * 
-	 * @throws UnStartedClientException
-	 *             if the client isn't started
-	 * @throws IOException
-	 *             if the client can't close the connection
+	 * @throws UnStartedClientException if the client isn't started
+	 * @throws IOException              if the client can't close the connection
 	 */
 	public synchronized void stop() throws IOException {
 		checkStartedClient();
@@ -1073,15 +1036,15 @@ public class TSClientQuery {
 	 * add a server group token to a server, the {@link EnumEvent#notifytokenadd}
 	 * event must be registered
 	 * 
-	 * @param serverGroupID
-	 *            the server group id
+	 * @param serverGroupID the server group id
 	 * @return the created token
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
-	 * @throws QueryException
-	 *             if an error occurred (bad serverGroupID)
-	 * @throws UnRegisterQueryException
-	 *             if the {@link EnumEvent#notifytokenadd} event isn't registered
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
+	 * @throws QueryException                              if an error occurred (bad
+	 *                                                     serverGroupID)
+	 * @throws UnRegisterQueryException                    if the
+	 *                                                     {@link EnumEvent#notifytokenadd}
+	 *                                                     event isn't registered
 	 */
 	public String tokenAdd(int serverGroupID)
 			throws InsufficientClientPermissionsQueryException, UnRegisterQueryException, QueryException {
@@ -1097,16 +1060,16 @@ public class TSClientQuery {
 	 * add a channel group token to a server, the {@link EnumEvent#notifytokenadd}
 	 * event must be registered
 	 * 
-	 * @param channelGroupID
-	 *            the channel group id
-	 * @param channelID
-	 *            the channel id
+	 * @param channelGroupID the channel group id
+	 * @param channelID      the channel id
 	 * @return the created token
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
-	 * @throws QueryException
-	 *             if an error occurred (bad channelGroupID or channelID) if the
-	 *             {@link EnumEvent#notifytokenadd} event isn't registered
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
+	 * @throws QueryException                              if an error occurred (bad
+	 *                                                     channelGroupID or
+	 *                                                     channelID) if the
+	 *                                                     {@link EnumEvent#notifytokenadd}
+	 *                                                     event isn't registered
 	 */
 	public String tokenAdd(int channelGroupID, int channelID)
 			throws InsufficientClientPermissionsQueryException, UnRegisterQueryException, QueryException {
@@ -1121,12 +1084,11 @@ public class TSClientQuery {
 	/**
 	 * delete a token from a server
 	 * 
-	 * @param token
-	 *            the token to delete
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
-	 * @throws QueryException
-	 *             if an error occurred (bad token)
+	 * @param token the token to delete
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
+	 * @throws QueryException                              if an error occurred (bad
+	 *                                                     token)
 	 */
 	public void tokenDelete(String token) throws InsufficientClientPermissionsQueryException, QueryException {
 		ErrorAnswer a = sendQuery(new TokenDeleteQuery(token));
@@ -1139,10 +1101,11 @@ public class TSClientQuery {
 	 * must be registered
 	 * 
 	 * @return the token list
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
-	 * @throws UnRegisterQueryException
-	 *             if the {@link EnumEvent#notifytokenlist} event isn't registered
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
+	 * @throws UnRegisterQueryException                    if the
+	 *                                                     {@link EnumEvent#notifytokenlist}
+	 *                                                     event isn't registered
 	 */
 	public List<Token> tokenList() throws InsufficientClientPermissionsQueryException, UnRegisterQueryException {
 		return sendQuery(new TokenListQuery()).getTokenList();
@@ -1151,12 +1114,11 @@ public class TSClientQuery {
 	/**
 	 * use and delete a token from a server
 	 * 
-	 * @param token
-	 *            the token to delete
-	 * @throws InsufficientClientPermissionsQueryException
-	 *             if the client hasn't the permission to do this
-	 * @throws QueryException
-	 *             if an error occurred (bad token)
+	 * @param token the token to delete
+	 * @throws InsufficientClientPermissionsQueryException if the client hasn't the
+	 *                                                     permission to do this
+	 * @throws QueryException                              if an error occurred (bad
+	 *                                                     token)
 	 */
 	public void tokenUse(String token) throws InsufficientClientPermissionsQueryException, QueryException {
 		ErrorAnswer a = sendQuery(new TokenDeleteQuery(token));
@@ -1174,8 +1136,7 @@ public class TSClientQuery {
 	/**
 	 * unregister an handler
 	 * 
-	 * @param handler
-	 *            the handler
+	 * @param handler the handler
 	 */
 	public synchronized void unregisterHandler(Handler handler) {
 		HANDLERS.remove(handler);
@@ -1191,8 +1152,7 @@ public class TSClientQuery {
 	/**
 	 * Selects the server connection handler scHandlerID
 	 * 
-	 * @param scHandlerID
-	 *            the server connection handler
+	 * @param scHandlerID the server connection handler
 	 */
 	public void use(int scHandlerID) {
 		sendQuery(new UseQuery(scHandlerID));
@@ -1201,10 +1161,8 @@ public class TSClientQuery {
 	/**
 	 * use a certain command to a schandlerID
 	 * 
-	 * @param schandlerID
-	 *            the server connection handler id
-	 * @param and
-	 *            the action to perform
+	 * @param schandlerID the server connection handler id
+	 * @param and         the action to perform
 	 */
 	public synchronized void use(int schandlerID, Consumer<TSClientQuery> and) {
 		use(schandlerID);
@@ -1214,8 +1172,7 @@ public class TSClientQuery {
 	/**
 	 * check if we know a channel password
 	 * 
-	 * @param password
-	 *            the password to try
+	 * @param password the password to try
 	 * @return true if the password is correct, false otherwise
 	 */
 	public boolean verifyChannelPassword(int channelID, String password) {
@@ -1225,8 +1182,7 @@ public class TSClientQuery {
 	/**
 	 * check if we know the server password
 	 * 
-	 * @param password
-	 *            the password to try
+	 * @param password the password to try
 	 * @return true if the password is correct, false otherwise
 	 */
 	public boolean verifyServerPassword(String password) {
