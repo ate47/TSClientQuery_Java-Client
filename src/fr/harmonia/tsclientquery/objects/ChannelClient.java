@@ -56,6 +56,7 @@ public class ChannelClient extends ParsedObject {
 	public SpeakIcon getSpeakIcon() {
 		return getSpeakIcon(true);
 	}
+
 	public SpeakIcon getSpeakIcon(boolean isInOurChannel) {
 		if (!isClientOutputHardware())
 			return SpeakIcon.SPEAKER_DISABLE;

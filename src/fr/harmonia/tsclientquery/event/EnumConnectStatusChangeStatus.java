@@ -15,7 +15,7 @@ public enum EnumConnectStatusChangeStatus {
 	 */
 	connection_established,
 	/**
-	 * ask every channel -> end with channellistfinished
+	 * ask every channel, end with channellistfinished
 	 */
 	connection_establishing,
 	/**

@@ -7,6 +7,7 @@ public class BanBuilder {
 	public static class BanBuilderNoTargetException extends IllegalArgumentException {
 		private static final long serialVersionUID = 5425099683145168929L;
 	}
+
 	private String banreason;
 	private String ip;
 	private String regex;

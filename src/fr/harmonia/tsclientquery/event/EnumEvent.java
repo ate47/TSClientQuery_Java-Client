@@ -7,6 +7,7 @@ import fr.harmonia.tsclientquery.query.ClientFromDatabaseIDQuery;
 import fr.harmonia.tsclientquery.query.ClientFromIDQuery;
 import fr.harmonia.tsclientquery.query.ClientFromUIDQuery;
 import fr.harmonia.tsclientquery.query.TokenAddQuery;
+import fr.harmonia.tsclientquery.query.TokenListQuery;
 
 public enum EnumEvent {
 	/**
@@ -29,7 +30,7 @@ public enum EnumEvent {
 	notifychannelclientpermlist("notifychannelclientpermlist"),
 
 	/**
-	 * @see Handler#onChannelCreate(int, int, int, String, String,
+	 * @see Handler#onChannelCreate(int, int, String, String,
 	 *      fr.harmonia.tsclientquery.objects.Channel)
 	 */
 	notifychannelcreated("notifychannelcreated"),
@@ -40,7 +41,7 @@ public enum EnumEvent {
 	notifychanneldeleted("notifychanneldeleted"),
 
 	/**
-	 * @see Handler#onChannelEdited(int, int, int, String, String,
+	 * @see Handler#onChannelEdited(int, int, String, String,
 	 *      fr.harmonia.tsclientquery.objects.Channel)
 	 */
 	notifychanneledited("notifychanneledited"),

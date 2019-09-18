@@ -9,7 +9,7 @@ public class InsufficientClientPermissionsQueryException extends QueryException 
 	public InsufficientClientPermissionsQueryException(ErrorAnswer errorAnswer) {
 		super(errorAnswer);
 	}
-	
+
 	public int getFailedPermid() {
 		return getErrorAnswer().getInteger("failed_permid");
 	}

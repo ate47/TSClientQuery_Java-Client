@@ -7,7 +7,7 @@ public class ChannelCreateAnswer extends Answer {
 	public ChannelCreateAnswer(ParsedObject obj) {
 		super(obj);
 	}
-	
-	//TODO
+
+	// TODO
 
 }

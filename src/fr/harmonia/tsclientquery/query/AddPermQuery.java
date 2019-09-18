@@ -57,6 +57,7 @@ public class AddPermQuery<T extends AddPermQuery<T>> extends NoAnswerQuery {
 		super(name);
 		addPerm(permid, permvalue);
 	}
+
 	public AddPermQuery(String name, String permsid, int permvalue) {
 		super(name);
 		addPerm(permsid, permvalue);
@@ -67,6 +68,7 @@ public class AddPermQuery<T extends AddPermQuery<T>> extends NoAnswerQuery {
 		perms.add(new PermByID(permid, permvalue));
 		return (T) this;
 	}
+
 	@SuppressWarnings("unchecked")
 	public T addPerm(String permsid, int permvalue) {
 		perms.add(new PermByName(permsid, permvalue));

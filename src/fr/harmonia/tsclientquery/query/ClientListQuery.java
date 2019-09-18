@@ -4,9 +4,8 @@ import fr.harmonia.tsclientquery.answer.ClientListAnswer;
 import fr.harmonia.tsclientquery.objects.ParsedObject;
 
 /*
-clientlist
-clid=1 cid=1 client_database_id=2 client_nickname=ATE47 client_type=0
-error id=0 msg=ok
+ * clientlist clid=1 cid=1 client_database_id=2 client_nickname=ATE47
+ * client_type=0 error id=0 msg=ok
  */
 public class ClientListQuery extends Query<ClientListAnswer> {
 
@@ -28,7 +27,7 @@ public class ClientListQuery extends Query<ClientListAnswer> {
 			addOption("-icon");
 		if (country)
 			addOption("-country");
-		
+
 		answer = new ClientListAnswer();
 	}
 

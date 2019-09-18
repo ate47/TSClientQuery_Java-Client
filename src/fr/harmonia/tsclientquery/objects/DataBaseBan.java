@@ -1,9 +1,11 @@
 package fr.harmonia.tsclientquery.objects;
 
 /*
-banid=2 ip name=Le\struc uid mytsid lastnickname created=1565268333 duration=0 
-
-invokername=ATE47 invokercldbid=2 invokeruid=5H1C8xKIFE3TQqp7i7P3IE7Jtgk= reason=Michel enforcements=0
+ * banid=2 ip name=Le\struc uid mytsid lastnickname created=1565268333
+ * duration=0
+ * 
+ * invokername=ATE47 invokercldbid=2 invokeruid=5H1C8xKIFE3TQqp7i7P3IE7Jtgk=
+ * reason=Michel enforcements=0
  */
 public class DataBaseBan {
 	private int banid;
@@ -18,6 +20,7 @@ public class DataBaseBan {
 	private String name;
 	private String reason;
 	private String uid;
+
 	public DataBaseBan(int banid, String ip, String name, String uid, String lastnickname, long created, long duration,
 			String invokername, int invokercldbid, String invokeruid, String reason, int enforcements) {
 		this.banid = banid;
@@ -57,7 +60,7 @@ public class DataBaseBan {
 	public String getInvokerNickname() {
 		return invokername;
 	}
-	
+
 	public String getInvokerUID() {
 		return invokeruid;
 	}

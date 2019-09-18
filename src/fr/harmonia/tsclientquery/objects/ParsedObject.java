@@ -65,9 +65,12 @@ public class ParsedObject {
 	}
 
 	/**
+	 * Convert this object to a list
 	 * 
-	 * @param converter
-	 * @return
+	 * @param  <R>       the list type
+	 * @param  converter the parser
+	 * @return           the new list
+	 * 
 	 */
 	public <R> List<R> convertRowInto(Function<ParsedObject, R> converter) {
 		List<R> l = new ArrayList<>();
@@ -83,7 +86,7 @@ public class ParsedObject {
 	 * parse the line if not already done (by asking a value) and return the data
 	 * map
 	 * 
-	 * @return the argument map
+	 * @return     the argument map
 	 * @deprecated only for internal use
 	 */
 	@Deprecated
@@ -95,7 +98,7 @@ public class ParsedObject {
 	}
 
 	/**
-	 * the data line receive
+	 * @return the data line receive
 	 */
 	public String getLine() {
 		return line;
@@ -112,14 +115,14 @@ public class ParsedObject {
 	}
 
 	/**
-	 * true while the row pointed isn't empty
+	 * @return true while the row pointed isn't empty
 	 */
 	public boolean rowNotEmpty() {
 		return index != getData().length && !data[index].isEmpty();
 	}
 
 	/**
-	 * get the number of rows returned
+	 * @return get the number of rows returned
 	 */
 	public int rowsCount() {
 		return getData().length;
@@ -133,10 +136,8 @@ public class ParsedObject {
 	/**
 	 * update those data with a new {@link ParsedObject}
 	 * 
-	 * @param object
-	 *            the new object
-	 * @param share
-	 *            if old data must be shared or merge in this object
+	 * @param object the new object
+	 * @param share  if old data must be shared or merge in this object
 	 */
 	public void update(ParsedObject object, boolean share) {
 		if (!share) {
@@ -152,10 +153,8 @@ public class ParsedObject {
 	/**
 	 * update those data with a new line
 	 * 
-	 * @param line
-	 *            the new line
-	 * @param reset
-	 *            if old data must be delete
+	 * @param line  the new line
+	 * @param reset if old data must be delete
 	 */
 	public void update(String line, boolean reset) {
 		if (!reset) {
@@ -186,11 +185,9 @@ public class ParsedObject {
 	/**
 	 * get a key value
 	 * 
-	 * @param index
-	 *            the row index
-	 * @param key
-	 *            the key
-	 * @return the value, or null if inexistent
+	 * @param  index the row index
+	 * @param  key   the key
+	 * @return       the value, or null if inexistent
 	 */
 	protected String get(int index, String key) {
 		return getData()[index].get(key);
@@ -199,9 +196,8 @@ public class ParsedObject {
 	/**
 	 * get a key value for the pointed row
 	 * 
-	 * @param key
-	 *            the key
-	 * @return the value, or null if inexistent
+	 * @param  key the key
+	 * @return     the value, or null if inexistent
 	 */
 	protected String get(String key) {
 		return get(index, key);
@@ -210,11 +206,9 @@ public class ParsedObject {
 	/**
 	 * get a key value as a boolean
 	 * 
-	 * @param index
-	 *            the row index
-	 * @param key
-	 *            the key
-	 * @return the value, or false if inexistent
+	 * @param  index the row index
+	 * @param  key   the key
+	 * @return       the value, or false if inexistent
 	 */
 	protected boolean getBoolean(int index, String key) {
 		return getInteger(index, key) != 0;
@@ -223,9 +217,8 @@ public class ParsedObject {
 	/**
 	 * get a key value as a boolean for the pointed row
 	 * 
-	 * @param key
-	 *            the key
-	 * @return the value, or false if inexistent
+	 * @param  key the key
+	 * @return     the value, or false if inexistent
 	 */
 	protected boolean getBoolean(String key) {
 		return getBoolean(index, key);
@@ -234,11 +227,9 @@ public class ParsedObject {
 	/**
 	 * get a key value as a integer
 	 * 
-	 * @param index
-	 *            the row index
-	 * @param key
-	 *            the key
-	 * @return the value, or 0 if inexistent
+	 * @param  index the row index
+	 * @param  key   the key
+	 * @return       the value, or 0 if inexistent
 	 */
 	protected int getInteger(int index, String key) {
 		String value = getData()[index].get(key);
@@ -248,9 +239,8 @@ public class ParsedObject {
 	/**
 	 * get a key value as a integer for pointed row
 	 * 
-	 * @param key
-	 *            the key
-	 * @return the value, or 0 if inexistent
+	 * @param  key the key
+	 * @return     the value, or 0 if inexistent
 	 */
 	protected int getInteger(String key) {
 		return getInteger(index, key);
@@ -259,11 +249,9 @@ public class ParsedObject {
 	/**
 	 * get a key value as a long
 	 * 
-	 * @param index
-	 *            the row index
-	 * @param key
-	 *            the key
-	 * @return the value, or 0 if inexistent
+	 * @param  index the row index
+	 * @param  key   the key
+	 * @return       the value, or 0 if inexistent
 	 */
 	protected long getLong(int index, String key) {
 		String value = getData()[index].get(key);
@@ -273,14 +261,13 @@ public class ParsedObject {
 	/**
 	 * get a key value as a long for pointed row
 	 * 
-	 * @param key
-	 *            the key
-	 * @return the value, or 0 if inexistent
+	 * @param  key the key
+	 * @return     the value, or 0 if inexistent
 	 */
 	protected long getLong(String key) {
 		return getLong(index, key);
 	}
-	
+
 	protected void set(String key, Object value) {
 		getData()[index].put(key, String.valueOf(value));
 	}

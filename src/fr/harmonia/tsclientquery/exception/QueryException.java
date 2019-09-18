@@ -67,7 +67,6 @@ public class QueryException extends RuntimeException {
 	 * error id=768 msg=invalid\schannelID
 	 */
 	public static final int ERROR_IDINVALID_CHANNEL_ID = 768;
-	
 
 	private static final long serialVersionUID = 1L;
 

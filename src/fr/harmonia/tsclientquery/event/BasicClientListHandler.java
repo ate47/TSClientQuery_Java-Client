@@ -47,17 +47,16 @@ public class BasicClientListHandler implements Handler {
 		}
 
 		/**
-		 * get static collection of clients in the same channel ID as our connection
+		 * @return a static collection of clients in the same channel ID as our
+		 *         connection
 		 */
 		public Collection<Client> getChannelClient() {
 			return getChannelClient(data.cid);
 		}
 
 		/**
-		 * get static collection of clients in a channel
-		 * 
-		 * @param cid
-		 *            the channel id
+		 * @param  cid the channel id
+		 * @return     static collection of clients in a channel
 		 */
 		public Collection<Client> getChannelClient(int cid) {
 			return data.CLID_TO_CLIENT.values().stream().filter(c -> c.getChannelID() == cid)
@@ -148,9 +147,8 @@ public class BasicClientListHandler implements Handler {
 	/**
 	 * get a view of the {@link Client} of a server connection
 	 * 
-	 * @param schandlerid
-	 *            the server connection to view
-	 * @return a collection of client
+	 * @param  schandlerid the server connection to view
+	 * @return             a collection of client
 	 */
 	public Collection<Client> getClients(int schandlerid) {
 		return createOrGetServerConnectionHandlerData(schandlerid).CLID_TO_CLIENT.values();
@@ -182,7 +180,7 @@ public class BasicClientListHandler implements Handler {
 		client.clientNotifyRegister(EnumEvent.notifyclientupdated);
 
 		int schandlerid = client.currentServerConnectionHandlerID();
-		
+
 		queryClients(schandlerid);
 
 		viewClients.data = createOrGetServerConnectionHandlerData(schandlerid);

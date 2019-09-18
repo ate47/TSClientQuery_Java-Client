@@ -9,7 +9,8 @@ import fr.harmonia.tsclientquery.query.Query;
 
 class QueryWritter extends Thread {
 	/**
-	 * stupid query to say we're still here 
+	 * stupid query to say we're still here
+	 * 
 	 * @author ATE47
 	 *
 	 */
@@ -18,12 +19,13 @@ class QueryWritter extends Thread {
 		public OkQuery() {
 			super("ok");
 		}
-		
+
 	}
 
 	private TSClientQuery client;
 
 	private OutputStream stream;
+
 	public QueryWritter(TSClientQuery client, OutputStream stream) {
 		this.client = client;
 		this.stream = stream;
@@ -38,7 +40,7 @@ class QueryWritter extends Thread {
 
 				if (q == null)
 					q = new OkQuery();
-				
+
 				synchronized (client.currentQuery) {
 					client.currentQuery.set(q);
 

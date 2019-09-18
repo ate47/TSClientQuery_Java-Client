@@ -23,8 +23,8 @@ public class DelPermQuery<T extends DelPermQuery<T>> extends NoAnswerQuery {
 
 	@Override
 	public String createCommand() {
-		return super.createCommand() + ' '
-				+ permsid.stream().map(k -> "permsid=" + TSClientQuery.encodeQueryStringParameter(k)).collect(Collectors.joining("|"));
+		return super.createCommand() + ' ' + permsid.stream()
+				.map(k -> "permsid=" + TSClientQuery.encodeQueryStringParameter(k)).collect(Collectors.joining("|"));
 	}
 
 }
