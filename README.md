@@ -1,1 +1,1 @@
-TSClientQuery sert à connecter le client Teamspeak depuis le plugin [ClientQuery](https://forum.teamspeak.com/threads/66509-Official-ClientQuery-Plugin).
+TSClientQuery_Java-Client is a wrapper to handle a communication with the [ClientQuery plugin](https://forum.teamspeak.com/threads/66509-Official-ClientQuery-Plugin) for Teamspeak 3.
